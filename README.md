@@ -1,25 +1,26 @@
-# 🏡 EstateStager AI — Open-Source AI Virtual Home Staging SaaS (Free BoxBrownie & Virtual Staging AI Alternative)
+# 🏡 Real Estate AI Studio
+<!--EstateStager AI — Open-Source AI Virtual Home Staging SaaS (Free BoxBrownie & Virtual Staging AI Alternative)-->
 
 > **Turn empty rooms into furnished showrooms with photorealistic AI staging in seconds.** A production-ready, self-hostable Next.js SaaS boilerplate built for real estate agents, home stagers, and interior designers — replaces $20–$30/photo virtual staging services. A free open-source alternative to BoxBrownie, Virtual Staging AI, ApplyDesign, and roOomy — powered by the MuAPI AI engine.
 
 **Tech stack:** Next.js 14 (App Router) · Prisma · PostgreSQL · NextAuth (Google OAuth) · Stripe · Tailwind CSS · MuAPI · Webhook-backed async delivery
 **Use cases:** MLS listing photography · Empty property staging · Pre-sale home preparation · Airbnb listing visuals · Interior design mood boards · Realtor marketing · Investor property showcases · Real estate flyers
 
-<p align="center">
+<!-- <p align="center">
   <a href="https://github.com/Anil-matcha/awesome-generative-ai-apps">
     <img src="https://img.shields.io/badge/Part%20of-Awesome%20Generative%20AI%20Apps-FFD700?style=for-the-badge&logo=github&logoColor=black" alt="Awesome Generative AI Apps">
   </a>
-</p>
+</p> -->
 
-> 🎨 **[Explore 50+ more open-source AI apps →](https://github.com/Anil-matcha/awesome-generative-ai-apps)**
+<!--> 🎨 **[Explore 50+ more open-source AI apps →](https://github.com/Anil-matcha/awesome-generative-ai-apps)**
 
-https://github.com/user-attachments/assets/5dea1dae-62f2-43fd-9824-3c6e25b15209
+https://github.com/user-attachments/assets/5dea1dae-62f2-43fd-9824-3c6e25b15209-->
 
 ## 🌐 Project Details
 
-**GitHub Repository:** [github.com/SamurAIGPT/ai-real-estate-stager](https://github.com/SamurAIGPT/ai-real-estate-stager)
+<!--**GitHub Repository:** [github.com/SamurAIGPT/ai-real-estate-stager](https://github.com/SamurAIGPT/ai-real-estate-stager)--> 
 
-**Live Demo Preview:** [ai-real-estate-stager.vercel.app](https://ai-real-estate-stager.vercel.app/)
+<!--**Live Demo Preview:** [ai-real-estate-stager.vercel.app](https://ai-real-estate-stager.vercel.app/)-->
 
 ---
 
@@ -77,7 +78,7 @@ This architecture is engineered explicitly for **Vercel** serverless environment
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/SamurAIGPT/ai-real-estate-stager)
 
-**Live App:** [ai-real-estate-stager.vercel.app](https://ai-real-estate-stager.vercel.app/)
+<!--**Live App:** [ai-real-estate-stager.vercel.app](https://ai-real-estate-stager.vercel.app/)-->
 
 ### 🔑 Required Environment Variables
 
