@@ -26,6 +26,7 @@ export default function Pricing() {
 
     setLoadingPlan(planId);
     try {
+      // this request is hiting api/checkout/route.js file to get the plan
       const { data } = await axios.post("/api/checkout", { planId });
       if (data.url) {
         window.location.href = data.url;
