@@ -188,6 +188,14 @@ export async function POST(req) {
 
     // Save to DB
     const record = await prisma.roomDeclutter.create({
+      //imageUrl
+      // prompt
+      // roomType
+      // modelName
+      // aspectRatio
+      // googleSearch
+      // resolution
+      // outputFormat
       data: {
         userId: session.user.id,
         inputImage: imageUrl,

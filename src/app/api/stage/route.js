@@ -123,6 +123,10 @@ export async function POST(req) {
     const status = isCompleted ? "completed" : "generating";
 
     const room = await prisma.stagedRoom.create({
+      // roomType
+      // designStyle
+      // originalImage
+      // userPrompt
       data: {
         roomType,
         designStyle,
