@@ -1,5 +1,5 @@
 const config = {
-  appName: "Ai Real Estate Stager",
+  appName: "Real Estate AI Studio",
   auth: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -18,7 +18,7 @@ const config = {
         id: "starter",
         name: "Starter Pack",
         credits: 100,
-        price: 1000, // $10.00
+        price: 1500, // $15.00
       },
       pro: {
         id: "pro",
@@ -36,7 +36,21 @@ const config = {
   },
   ai: {
     apiKey: process.env.MUAPIAPP_API_KEY,
-    generationCost: 6, // 6 credits per AI staging layout generation
+    // stagging
+    stagingGenerationCost: 6, // 6 credits per AI staging layout generation
+    // decluttering
+    declutteringGenerationCost: {
+      "nano-banana-2-edit": {
+        "1k": 12,
+        "2k": 18,
+        "4k": 24,
+      },
+      "nano-banana-pro-edit": {
+        "1k": 24,
+        "2k": 24,
+        "4k": 36,
+      },
+    },
   },
   db: {
     url: process.env.DATABASE_URL,

@@ -20,7 +20,6 @@ model Account {
   scope              String?
   id_token           String?  @db.Text
   session_state      String?
-
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -45,6 +44,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   stagedRooms   StagedRoom[]
+  roomDeclutters RoomDeclutter[]
 }
 
 model StagedRoom {
@@ -60,6 +60,21 @@ model StagedRoom {
   updateTime    DateTime  @updatedAt
   userId        String
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RoomDeclutter {
+  id          String   @id @default(cuid())
+  userId      String
+  inputImage  String
+  resultImage String   @default("")
+  prompt      String
+  roomType    String
+  modelName   String
+  requestId   String   @unique
+  status      String   @default("processing")
+  creditCost  Int      @default(12)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
