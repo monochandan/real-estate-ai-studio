@@ -23,11 +23,11 @@ export function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 py-3.5 bg-white border-b border-slate-100 shadow-sm flex-shrink-0">
+    <nav className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 py-3.5 bg-bg-card border-b border-divider shadow-sm flex-shrink-0">
       {/* Brand logo */}
       <div className="flex items-center gap-5 sm:gap-7 min-w-0">
-        <Link href="/" className="flex items-center gap-2 font-extrabold tracking-tight text-slate-900 flex-shrink-0">
-          <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-100">
+        <Link href="/" className="flex items-center gap-2 font-extrabold tracking-tight text-primary-text flex-shrink-0">
+          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-btn-text shadow-md">
             <FaHome className="text-sm" />
           </div>
           <span className="text-sm sm:text-base leading-none">

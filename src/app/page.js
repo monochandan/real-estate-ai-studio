@@ -292,6 +292,14 @@ export default function RoomStagerPage() {
     }
   };
 
+  //1.  <div className="flex-1 flex flex-col md:flex-row md:overflow-hidden overflow-y-auto bg-slate-50"> ---changed
+
+  // //2.  className={`flex flex-col items-start px-3 py-2.5 rounded text-left border text-xs transition-all cursor-pointer ${
+  //                     isSelected
+  //                       ? "bg-indigo-50 border-indigo-200 text-indigo-700 font-bold"
+  //                       : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+  //                   }`}
+
   return (
     <div className="flex-1 flex flex-col md:flex-row md:overflow-hidden overflow-y-auto bg-slate-50">
       {/* ─── LEFT: Form Controls ────────────────────────────────────── */}
@@ -355,8 +363,8 @@ export default function RoomStagerPage() {
                     onClick={() => setSelectedRoom(type.id)}
                     className={`flex items-center gap-2 px-3 py-2 rounded text-left border text-xs font-bold transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-indigo-50 border-indigo-200 text-indigo-700"
-                        : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                        ? "bg-bg-page border-indigo-200 text-black"
+                        : "bg-white border-slate-200 text-black hover:bg-white"
                     }`}
                   >
                     <span className="text-sm">{type.emoji}</span>
@@ -380,8 +388,8 @@ export default function RoomStagerPage() {
                     onClick={() => setSelectedStyle(style.id)}
                     className={`flex flex-col items-start px-3 py-2.5 rounded text-left border text-xs transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-indigo-50 border-indigo-200 text-indigo-700 font-bold"
-                        : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                        ? "bg-bg-page border-indigo-200 text-black font-bold"
+                        : "bg-white border-slate-200 text-black hover:bg-white"
                     }`}
                     title={style.desc}
                   >
@@ -389,7 +397,7 @@ export default function RoomStagerPage() {
                       <span>{style.emoji}</span>
                       <span className="font-bold truncate">{style.name}</span>
                     </div>
-                    <span className={`text-[9px] truncate mt-0.5 max-w-full ${isSelected ? "text-indigo-500 font-medium" : "text-slate-400"}`}>
+                    <span className={`text-[9px] truncate mt-0.5 max-w-full ${isSelected ? "text-black font-medium" : "text-black"}`}>
                       {style.desc}
                     </span>
                   </button>
@@ -532,7 +540,7 @@ export default function RoomStagerPage() {
               className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize select-none z-10 slider-handle shadow-2xl flex items-center justify-center"
               style={{ left: `${sliderPosition}%`, transform: "translateX(-50%)" }}
             >
-              <div className="h-9 w-9 rounded-full flex-shrink-0 bg-indigo-600 border-2 border-white shadow-lg flex items-center justify-center text-white text-[10px] gap-1 hover:scale-105 active:scale-95 transition-transform">
+              <div className="h-9 w-9 rounded-full flex-shrink-0 bg-bg-page border-2 border-white shadow-lg flex items-center justify-center text-black text-[10px] gap-1 hover:scale-105 active:scale-95 transition-transform">
                 <FaArrowLeft />
                 <FaArrowRight />
               </div>
@@ -541,7 +549,7 @@ export default function RoomStagerPage() {
             <div className="absolute top-4 left-4 bg-slate-900/60 backdrop-blur-sm border border-slate-800 text-white text-[9px] font-bold px-2.5 py-1 rounded-md z-20 shadow">
               Before (Empty)
             </div>
-            <div className="absolute top-4 right-4 bg-indigo-600/80 backdrop-blur-sm border border-indigo-500 text-white text-[9px] font-bold px-2.5 py-1 rounded-md z-20 shadow">
+            <div className="absolute top-4 right-4 bg-primary backdrop-blur-sm border border-bg-page text-white text-[9px] font-bold px-2.5 py-1 rounded-md z-20 shadow">
               After (Staged)
             </div>
           </div>
@@ -556,15 +564,15 @@ export default function RoomStagerPage() {
                 <button
                   key={ex.id}
                   onClick={() => loadExample(ex)}
-                  className="flex items-center gap-3 p-2.5 border border-slate-150 rounded hover:border-indigo-300 hover:bg-slate-50/50 text-left transition-all group cursor-pointer"
+                  className="flex items-center gap-3 p-2.5 border border-slate-150 rounded hover:border-bg-page hover:bg-page text-left transition-all group cursor-pointer"
                 >
-                  <div className="h-10 w-10 bg-slate-100 rounded overflow-hidden border border-slate-200/50 flex-shrink-0 flex items-center justify-center font-bold text-slate-400">
+                  <div className="h-10 w-10 bg-page rounded overflow-hidden border border-slate-200/50 flex-shrink-0 flex items-center justify-center font-bold text-slate-400">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={ex.after} alt={ex.name} className="h-full w-full object-cover group-hover:scale-105 transition-transform" />
                   </div>
                   
                   <div className="min-w-0">
-                    <h4 className="text-[11px] font-bold text-slate-800 truncate leading-snug group-hover:text-indigo-600">
+                    <h4 className="text-[11px] font-bold text-slate-800 truncate leading-snug group-hover:text-black">
                       {ex.name}
                     </h4>
                     <p className="text-[9px] text-slate-400 mt-0.5">{ex.type} • {ex.style}</p>

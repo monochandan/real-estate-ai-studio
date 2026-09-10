@@ -4,13 +4,21 @@
   --font-sans: var(--font-inter), sans-serif;
   --font-outfit: var(--font-inter), sans-serif;
   
-  --color-bg-page: var(--bg-page, #f4f4f5);
-  --color-bg-card: var(--bg-card, #ffffff);
+  /* navbar background */
+  /* --color-bg-page: var(--bg-page, #f4f4f5); */
+  --color-bg-page: var(--bg-page, #e2f1e5);
+
+  /* pricing card */
+  --color-bg-card: var(--bg-card, #ffffff); 
+ 
   --color-bg-card-hover: var(--bg-card-hover, #e4e4e7);
   --color-bg-elevated: var(--bg-elevated, #ffffff);
   --color-divider: var(--divider, #e4e4e7);
-  --color-primary: var(--primary, #4f46e5);
-  --color-primary-hover: var(--primary-hover, #4338ca);
+  /* --color-primary: var(--primary, #4f46e5);   */
+  --color-primary: var(--primary, #46e56c); 
+   
+  /* --color-primary-hover: var(--primary-hover, #4338ca); */
+  --color-primary-hover: var(--primary-hover, #abeeae);
   --color-primary-text: var(--primary-text, #1f2937);
   --color-secondary-text: var(--secondary-text, #6b7280);
   --color-primary-btn-text: var(--primary-btn-text, #ffffff);
