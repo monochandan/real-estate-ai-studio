@@ -18,9 +18,9 @@
 
 <!--> 🎨 **[Explore 50+ more open-source AI apps →](https://github.com/Anil-matcha/awesome-generative-ai-apps)**
 
-https://github.com/user-attachments/assets/5dea1dae-62f2-43fd-9824-3c6e25b15209-->
+<!--https://github.com/user-attachments/assets/5dea1dae-62f2-43fd-9824-3c6e25b15209-->
 
-## 🌐 Project Details
+<!--## 🌐 Project Details
 
 <!--**GitHub Repository:** [github.com/SamurAIGPT/ai-real-estate-stager](https://github.com/SamurAIGPT/ai-real-estate-stager)--> 
 
@@ -28,7 +28,7 @@ https://github.com/user-attachments/assets/5dea1dae-62f2-43fd-9824-3c6e25b15209-
 
 ---
 
-EstateStager AI is a production-ready, highly-optimized AI web application. Out of the box, it seamlessly manages User Authentication, Credits & Billing, Image Persistence, and asynchronous AI staging using a sleek Next.js (App Router) architecture. It empowers real estate agents, home stagers, and interior designers to turn empty vacant spaces into premium furnished showrooms — all without physical staging costs.
+EstateStager AI is a production-ready, highly-optimized AI web application. Out of the box, it seamlessly manages User Authentication, Credits & Billing, Image Persistence, and asynchronous AI staging using a sleek Next.js (App Router) architecture. It empowers real estate agents, home stagers, and interior designers to turn empty vacant spaces into premium furnished showrooms — all without physical staging costs.-->
 
 **Why use Real Estate AI Studio?**
 
