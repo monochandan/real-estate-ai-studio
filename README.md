@@ -16,7 +16,7 @@
   </a>
 </p> -->
 
-<!--> 🎨 **[Explore 50+ more open-source AI apps →](https://github.com/Anil-matcha/awesome-generative-ai-apps)**
+<!--> 🎨 **[Explore 50+ more open-source AI apps →](https://github.com/Anil-matcha/awesome-generative-ai-apps)**-->
 
 <!--https://github.com/user-attachments/assets/5dea1dae-62f2-43fd-9824-3c6e25b15209-->
 
