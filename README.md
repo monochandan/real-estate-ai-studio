@@ -23,10 +23,11 @@
 
 A production-ready, self-hostable Next.js SaaS boilerplate built for real estate agents, home stagers, and interior designers.
 
-🏠 **Virtual Staging — Turn an empty room into a furnished showroom with photorealistic AI in seconds.
+🏠 **Virtual Staging** — Turn an empty room into a furnished showroom with photorealistic AI in seconds.
 
-🧹 **Decluttering — Turn a messy room into a clean, listing-ready space in one click.
-🎬 **Short Video Generation — Turn static images into a realistic walkthrough-style video with property desciption, voice and music added.
+🧹 **Decluttering** — Turn a messy room into a clean, listing-ready space in one click.
+
+🎬 **Short Video Generation** — Turn static images into a realistic walkthrough-style video with property desciption, voice and music added.
 Replaces $20–$30/photo virtual staging services. A free open-source alternative to BoxBrownie, Virtual Staging AI, ApplyDesign, and roOomy — powered by the MuAPI AI engine.
 
 <!--> **Turn a room into furnished showrooms with photorealistic AI staging in seconds.** A production-ready, self-hostable Next.js SaaS boilerplate built for real estate agents, home stagers, and interior designers — replaces $20–$30/photo virtual staging services. A free open-source alternative to BoxBrownie, Virtual Staging AI, ApplyDesign, and roOomy — powered by the MuAPI AI engine. -->
