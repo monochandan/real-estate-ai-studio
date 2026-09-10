@@ -87,7 +87,7 @@ Real State AI Studio is a production-ready, highly-optimized AI web application.
 
 ---
 
-## Initial Video Generation demo (Image was downloaded from google):
+## Initial Video Generation demo (Images was downloaded from google):
 
 
 https://github.com/user-attachments/assets/6bf94567-e2a7-4e38-b94d-5fd201c18fb6
