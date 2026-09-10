@@ -7,7 +7,16 @@
 [![Stripe](https://img.shields.io/badge/Stripe-Billing-635BFF?style=for-the-badge&logo=stripe&logoColor=white)](https://stripe.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-Styling-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![MuAPI](https://img.shields.io/badge/MuAPI-AI%20Engine-8B5CF6?style=for-the-badge&logo=ai&logoColor=white)](https://muapi.ai/)
-[![Webhook](https://img.shields.io/badge/Webhook-Async%20Delivery-F59E0B?style=for-the-badge&logo=webhook&logoColor=white)](https://www.postman.com/webhooks)   
+[![Webhook](https://img.shields.io/badge/Webhook-Async%20Delivery-F59E0B?style=for-the-badge&logo=webhook&logoColor=white)](https://www.postman.com/webhooks) 
+
+[![MLS Photography](https://img.shields.io/badge/MLS%20Listing-Photography-1E40AF?style=for-the-badge&logo=camera&logoColor=white)](https://www.mls.com/)
+[![Empty Property Staging](https://img.shields.io/badge/Empty%20Property-Staging-059669?style=for-the-badge&logo=house&logoColor=white)](https://www.houzz.com/)
+[![Pre-Sale Preparation](https://img.shields.io/badge/Pre--Sale-Home%20Prep-DC2626?style=for-the-badge&logo=wrench&logoColor=white)](https://www.homeadvisor.com/)
+[![Airbnb Visuals](https://img.shields.io/badge/Airbnb-Listing%20Visuals-FF5A5F?style=for-the-badge&logo=airbnb&logoColor=white)](https://www.airbnb.com/)
+[![Mood Boards](https://img.shields.io/badge/Interior%20Design-Mood%20Boards-7C3AED?style=for-the-badge&logo=palette&logoColor=white)](https://www.pinterest.com/)
+[![Realtor Marketing](https://img.shields.io/badge/Realtor-Marketing-B45309?style=for-the-badge&logo=briefcase&logoColor=white)](https://www.zillow.com/)
+[![Investor Showcases](https://img.shields.io/badge/Investor-Property%20Showcases-0F766E?style=for-the-badge&logo=chart&logoColor=white)](https://www.realtor.com/investing)
+[![Real Estate Flyers](https://img.shields.io/badge/Real%20Estate-Flyers-4338CA?style=for-the-badge&logo=document&logoColor=white)](https://www.canva.com/)   
 
 > **Turn a room into furnished showrooms with photorealistic AI staging in seconds.** A production-ready, self-hostable Next.js SaaS boilerplate built for real estate agents, home stagers, and interior designers — replaces $20–$30/photo virtual staging services. A free open-source alternative to BoxBrownie, Virtual Staging AI, ApplyDesign, and roOomy — powered by the MuAPI AI engine.
 
