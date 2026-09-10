@@ -28,7 +28,7 @@
 
 ---
 
-EstateStager AI is a production-ready, highly-optimized AI web application. Out of the box, it seamlessly manages User Authentication, Credits & Billing, Image Persistence, and asynchronous AI staging using a sleek Next.js (App Router) architecture. It empowers real estate agents, home stagers, and interior designers to turn empty vacant spaces into premium furnished showrooms — all without physical staging costs.-->
+Real State AI Studio is a production-ready, highly-optimized AI web application. Out of the box, it seamlessly manages User Authentication, Credits & Billing, Image Persistence, and asynchronous AI staging using a sleek Next.js (App Router) architecture. It empowers real estate agents, home stagers, and interior designers to turn empty vacant spaces into premium furnished showrooms — all without physical staging costs.-->
 
 **Why use Real Estate AI Studio?**
 
@@ -39,7 +39,7 @@ EstateStager AI is a production-ready, highly-optimized AI web application. Out 
 - **Personal Gallery Dashboard** — All staged rooms are saved to PostgreSQL. Users can review, compare, download, and delete their stagings from `/dashboard`.
 - **Extensible Architecture** — Easily swap the underlying AI model or add new room types and design styles without breaking the UI.
 
-![EstateStager AI Screenshot](https://cdn.muapi.ai/data/2/635974623291/Screenshot_2026-05-25_160552.png)
+<!--![EstateStager AI Screenshot](https://cdn.muapi.ai/data/2/635974623291/Screenshot_2026-05-25_160552.png)-->
 
 ---
 
