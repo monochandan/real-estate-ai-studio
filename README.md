@@ -9,6 +9,16 @@
 [![MuAPI](https://img.shields.io/badge/MuAPI-AI%20Engine-8B5CF6?style=for-the-badge&logo=ai&logoColor=white)](https://muapi.ai/)
 [![Webhook](https://img.shields.io/badge/Webhook-Async%20Delivery-F59E0B?style=for-the-badge&logo=webhook&logoColor=white)](https://www.postman.com/webhooks) 
 
+[![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![TorchVision](https://img.shields.io/badge/TorchVision-Image%20Ops-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/vision/stable/)
+[![timm](https://img.shields.io/badge/timm-Image%20Models-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://github.com/huggingface/pytorch-image-models)
+[![OpenCV](https://img.shields.io/badge/OpenCV-Image%20Processing-F59E0B?style=for-the-badge&logo=opencv&logoColor=white)](https://opencv.org/)
+[![Pillow](https://img.shields.io/badge/Pillow-Image%20IO-36669B?style=for-the-badge&logo=pillow&logoColor=white)](https://pillow.readthedocs.io/)
+[![NumPy](https://img.shields.io/badge/NumPy-Array%20Computing-4DABCF?style=for-the-badge&logo=numpy&logoColor=white)](https://numpy.org/)
+[![Matplotlib](https://img.shields.io/badge/Matplotlib-Visualization-11557C?style=for-the-badge&logo=matplotlib&logoColor=white)](https://matplotlib.org/)
+[![imageio](https://img.shields.io/badge/imageio-Video%20IO-FF6B35?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://imageio.readthedocs.io/)
+[![imageio-ffmpeg](https://img.shields.io/badge/imageio--ffmpeg-FFmpeg%20Backend-FF6B35?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://imageio.readthedocs.io/)   
+
 [![MLS Photography](https://img.shields.io/badge/MLS%20Listing-Photography-1E40AF?style=for-the-badge&logo=camera&logoColor=white)](https://www.mls.com/)
 [![Empty Property Staging](https://img.shields.io/badge/Empty%20Property-Staging-059669?style=for-the-badge&logo=house&logoColor=white)](https://www.houzz.com/)
 [![Pre-Sale Preparation](https://img.shields.io/badge/Pre--Sale-Home%20Prep-DC2626?style=for-the-badge&logo=wrench&logoColor=white)](https://www.homeadvisor.com/)
