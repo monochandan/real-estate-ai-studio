@@ -28,7 +28,7 @@
 > **Turn static image into realistic video.** A production-ready, self-hostable Next.js SaaS boilerplate built for real estate agents, home stagers, and interior designers — replaces $20–$30/photo virtual staging services. A free open-source alternative to BoxBrownie, Virtual Staging AI, ApplyDesign, and roOomy — powered by the MuAPI AI engine.
 
 <!--**Tech stack:** Next.js 14 (App Router) · Prisma · PostgreSQL · NextAuth (Google OAuth) · Stripe · Tailwind CSS · MuAPI · Webhook-backed async delivery-->
-**Use cases:** MLS listing photography · Empty property staging · Pre-sale home preparation · Airbnb listing visuals · Interior design mood boards · Realtor marketing · Investor property showcases · Real estate flyers
+<!--**Use cases:** MLS listing photography · Empty property staging · Pre-sale home preparation · Airbnb listing visuals · Interior design mood boards · Realtor marketing · Investor property showcases · Real estate flyers-->
 
 <!-- <p align="center">
   <a href="https://github.com/Anil-matcha/awesome-generative-ai-apps">
