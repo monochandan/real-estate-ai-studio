@@ -16,7 +16,10 @@
 [![Mood Boards](https://img.shields.io/badge/Interior%20Design-Mood%20Boards-7C3AED?style=for-the-badge&logo=palette&logoColor=white)](https://www.pinterest.com/)
 [![Realtor Marketing](https://img.shields.io/badge/Realtor-Marketing-B45309?style=for-the-badge&logo=briefcase&logoColor=white)](https://www.zillow.com/)
 [![Investor Showcases](https://img.shields.io/badge/Investor-Property%20Showcases-0F766E?style=for-the-badge&logo=chart&logoColor=white)](https://www.realtor.com/investing)
-[![Real Estate Flyers](https://img.shields.io/badge/Real%20Estate-Flyers-4338CA?style=for-the-badge&logo=document&logoColor=white)](https://www.canva.com/)   
+[![Real Estate Flyers](https://img.shields.io/badge/Real%20Estate-Flyers-4338CA?style=for-the-badge&logo=document&logoColor=white)](https://www.canva.com/) 
+
+[![Decluttering](https://img.shields.io/badge/Decluttering-Clean%20Spaces-10B981?style=for-the-badge&logo=trash&logoColor=white)](https://www.houzz.com/)
+[![Short Video Generation](https://img.shields.io/badge/Short%20Video-Generation-E11D48?style=for-the-badge&logo=video&logoColor=white)](https://www.capcut.com/)   
 
 > **Turn a room into furnished showrooms with photorealistic AI staging in seconds.** A production-ready, self-hostable Next.js SaaS boilerplate built for real estate agents, home stagers, and interior designers — replaces $20–$30/photo virtual staging services. A free open-source alternative to BoxBrownie, Virtual Staging AI, ApplyDesign, and roOomy — powered by the MuAPI AI engine.
 
