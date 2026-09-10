@@ -35,12 +35,16 @@ export default function Navbar() {
 
   const navLinks = currentAppId
     ? [
-        { name: "Workspace", path: `/app/${currentAppId}` },
+        { name: "Staging", path: `/app/${currentAppId}` },
+        { name: "Decluttering", path: `/app/${currentAppId}/declutter` },
+        { name: "Video", path: `/app/${currentAppId}/video` },
         { name: "Gallery", path: `/app/${currentAppId}/gallery` },
         { name: "Pricing", path: `/app/${currentAppId}/pricing` },
       ]
     : [
-        { name: "Workspace", path: "/" },
+        { name: "Staging", path: "/" },
+        { name: "Decluttering", path: `/declutter` },
+        { name: "Video", path: `/video` },
         { name: "Gallery", path: "/gallery" },
         { name: "Pricing", path: "/pricing" },
       ];
@@ -144,7 +148,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           
           {/* Vercel Deploy Button */}
-          <a
+          {/* <a
             href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FSamurAIGPT%2Fcommon-saas-template"
             target="_blank"
             rel="noopener noreferrer"
@@ -152,7 +156,7 @@ export default function Navbar() {
           >
             <SiVercel className="text-xs text-white" />
             <span>Deploy</span>
-          </a>
+          </a> */}
 
           {/* Add/Manage API Key - Directly visible in Navbar */}
           <button
@@ -290,7 +294,7 @@ export default function Navbar() {
             <div className="h-px bg-divider/50 my-2" />
 
             {/* Vercel Deploy in Mobile menu */}
-            <a
+            {/* <a
               href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FSamurAIGPT%2Fcommon-saas-template"
               target="_blank"
               rel="noopener noreferrer"
@@ -298,7 +302,7 @@ export default function Navbar() {
             >
               <SiVercel className="text-xs text-white" />
               <span>Clone & Deploy Template</span>
-            </a>
+            </a> */}
 
             {status === "authenticated" ? (
               <button

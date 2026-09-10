@@ -36,6 +36,8 @@ yarn-error.log*
 .env.local
 .env.*.local
 
+real-estate-ai.txt
+
 # vercel
 .vercel
 

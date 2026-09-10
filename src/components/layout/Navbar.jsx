@@ -7,8 +7,10 @@ import { FaCoins, FaUser, FaHome, FaSignOutAlt, FaGoogle, FaRocket } from "react
 import clsx from "clsx";
 
 const navLinks = [
-  { name: "Room Stager", href: "/" },
+  { name: "Stagging", href: "/" },
   { name: "Pricing", href: "/pricing" },
+  { name: "Declutter", href:"/declutter"},
+  { name: "Video", href:"/video"}
 ];
 
 export function Navbar() {
