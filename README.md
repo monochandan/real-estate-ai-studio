@@ -79,34 +79,76 @@ Real State AI Studio is a production-ready, highly-optimized AI web application.
 ## 🏗️ Technical Architecture
 
 ```
-ai-real-estate-stager/
-├── prisma/
-│   └── schema.prisma           # Postgres tables: User, Account, Session, StagedRoom
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── page.js             # Main AI Design Studio (upload + staging + before/after)
-│   │   ├── dashboard/          # Personal staging gallery with split-slider modal
-│   │   ├── pricing/            # Credit pack purchase page
-│   │   └── api/
-│   │       ├── auth/           # NextAuth [...nextauth] handler
-│   │       ├── upload/         # MuAPI file upload proxy
-│   │       ├── stage/          # AI staging trigger (MuAPI nano-banana-edit)
-│   │       ├── rooms/          # GET / DELETE staged rooms (per user)
-│   │       ├── download/       # Server-side download proxy (CORS-safe)
-│   │       ├── webhook/muapi/  # MuAPI async result webhook handler
-│   │       └── stripe/         # Stripe checkout session + webhook
-│   ├── components/
-│   │   ├── Providers.jsx       # NextAuth SessionProvider wrapper
-│   │   └── layout/Navbar.jsx   # Sticky top navigation with credits badge
-│   └── lib/
-│       ├── auth.js             # NextAuth options + Prisma adapter
-│       ├── config.js           # Central env config (AI, Stripe, Auth)
-│       ├── prisma.js           # Singleton Prisma + pg pool connection client
-│       ├── stripe.js           # Stripe client instance
-│       └── services/
-│           ├── user.js         # Credit deduction / management
-│           └── billing.js      # Stripe checkout + webhook fulfillment
-└── next.config.mjs             # Next.js configuration
+Directory structure:
+└── monochandan-real-estate-ai-studio/
+    ├── README.md
+    ├── eslint.config.mjs
+    ├── jsconfig.json
+    ├── next.config.mjs
+    ├── package.json
+    ├── postcss.config.mjs
+    ├── prisma.config.ts
+    ├── real-estate-ai.txt
+    ├── prisma/
+    │   └── schema.prisma
+    └── src/
+        ├── app/
+        │   ├── globals.css
+        │   ├── layout.js
+        │   ├── page.js
+        │   ├── providers.js
+        │   ├── api/
+        │   │   ├── auth/
+        │   │   │   └── [...nextauth]/
+        │   │   │       └── route.js
+        │   │   ├── checkout/
+        │   │   │   └── route.js
+        │   │   ├── declutter/
+        │   │   │   └── generation/
+        │   │   │       └── route.js
+        │   │   ├── download/
+        │   │   │   └── route.js
+        │   │   ├── rooms/
+        │   │   │   └── route.js
+        │   │   ├── stage/
+        │   │   │   └── route.js
+        │   │   ├── stripe/
+        │   │   │   ├── checkout/
+        │   │   │   │   └── route.js
+        │   │   │   └── webhook/
+        │   │   │       └── route.js
+        │   │   ├── upload/
+        │   │   │   └── route.js
+        │   │   ├── user/
+        │   │   │   └── apikey/
+        │   │   │       └── route.js
+        │   │   └── webhook/
+        │   │       ├── muapi/
+        │   │       │   └── route.js
+        │   │       └── stripe/
+        │   │           └── route.js
+        │   ├── declutter/
+        │   │   └── page.js
+        │   ├── gallery/
+        │   │   └── page.js
+        │   ├── login/
+        │   │   └── page.js
+        │   └── pricing/
+        │       └── page.js
+        ├── components/
+        │   ├── Footer.js
+        │   ├── Navbar.js
+        │   ├── Providers.jsx
+        │   └── layout/
+        │       └── Navbar.jsx
+        └── lib/
+            ├── auth.js
+            ├── config.js
+            ├── prisma.js
+            ├── stripe.js
+            └── services/
+                ├── billing.js
+                └── user.js
 ```
 
 ---
