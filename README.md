@@ -1,9 +1,5 @@
 
 
-https://github.com/user-attachments/assets/ebed2a99-317e-4cf2-8dad-1488de763860
-
-
-
 # 🏡 Real Estate AI Studio
 <!--EstateStager AI — Open-Source AI Virtual Home Staging SaaS (Free BoxBrownie & Virtual Staging AI Alternative)-->
 [![Next.js](https://img.shields.io/badge/Next.js-14%20(App%20Router)-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
@@ -99,7 +95,7 @@ Real State AI Studio is a production-ready, highly-optimized AI web application.
 
 https://github.com/user-attachments/assets/6bf94567-e2a7-4e38-b94d-5fd201c18fb6
 
-
+https://github.com/user-attachments/assets/ebed2a99-317e-4cf2-8dad-1488de763860
 
 <!--## Project View
 
