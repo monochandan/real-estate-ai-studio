@@ -163,7 +163,7 @@ export default function DashboardPage() {
       <div className="flex-1 flex items-center justify-center bg-slate-50 px-4 py-12">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-slate-100 p-8 text-center">
           <div className="h-14 w-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-6 shadow-inner">
-            <FaImages className="text-2xl" />
+            <FaImages className="text-2xl text-primary bg-bg-page" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-2">My Staging Gallery</h1>
           <p className="text-sm text-slate-500 leading-relaxed mb-8">

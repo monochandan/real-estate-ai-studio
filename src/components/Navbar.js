@@ -159,7 +159,7 @@ export default function Navbar() {
           </a> */}
 
           {/* Add/Manage API Key - Directly visible in Navbar */}
-          <button
+          {/* <button
             onClick={() => setIsApiKeyModalOpen(true)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer ${
               isApiKeyActive
@@ -169,7 +169,7 @@ export default function Navbar() {
           >
             <FiKey className={isApiKeyActive ? "text-amber-400" : "text-secondary-text"} />
             <span>{isApiKeyActive ? "Custom API Key" : "Add API Key"}</span>
-          </button>
+          </button> */}
 
           {status === "authenticated" ? (
             <div className="flex items-center">

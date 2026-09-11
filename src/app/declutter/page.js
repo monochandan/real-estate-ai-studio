@@ -584,7 +584,7 @@ export default function StudioPage() {
       <div className="max-w-7xl mx-auto flex flex-col gap-6">
         {/* Header Title */}
         <div className="text-center max-w-2xl mx-auto flex flex-col gap-2 mb-2">
-          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-2 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-600">
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-2 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-800 to-primary">
             Declutter and Clean Messy Rooms
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
@@ -615,7 +615,7 @@ export default function StudioPage() {
                     }}
                     className={`py-1.5 text-[10px] font-black rounded transition-all cursor-pointer ${
                       modelName === "nano-banana-2-edit"
-                        ? "bg-indigo-600 text-white shadow-sm"
+                        ? "bg-primary text-black shadow-sm"
                         : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
@@ -644,7 +644,7 @@ export default function StudioPage() {
               {/* Step 1: Upload Cluttered Room Photo */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+                  <span className="text-[9px] font-black uppercase tracking-wider text-black bg-bg-page px-2 py-0.5 rounded border border-primary">
                     Step 1
                   </span>
                   <span className="text-[10px] text-slate-600 font-bold">
@@ -698,7 +698,7 @@ export default function StudioPage() {
                       </>
                     ) : (
                       <>
-                        <FaUpload className="text-sm text-indigo-600 mb-2 group-hover:scale-105 transition-transform duration-300" />
+                        <FaUpload className="text-sm text-primary mb-2 group-hover:scale-105 transition-transform duration-300" />
                         <span className="text-[10px] font-bold text-slate-700">
                           Drag & Drop room image
                         </span>
@@ -715,7 +715,7 @@ export default function StudioPage() {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+                    <span className="text-[9px] font-black uppercase tracking-wider text-black bg-bg-page px-2 py-0.5 rounded border border-primary">
                       Step 2
                     </span>
                     <span className="text-[10px] text-slate-600 font-bold">
@@ -737,7 +737,7 @@ export default function StudioPage() {
                         onClick={() => handleSelectPreset(preset)}
                         className={`aspect-[4/3] flex-shrink-0 relative w-full text-left border rounded overflow-hidden shadow-sm transition-all cursor-pointer group hover:scale-[1.02] outline-none ${
                           active
-                            ? "border-indigo-600 ring-2 ring-indigo-600/10"
+                            ? "border-primary ring-2 ring-bg-page"
                             : "border-slate-200 bg-slate-50 hover:border-slate-300"
                         }`}
                       >
@@ -771,7 +771,7 @@ export default function StudioPage() {
               {/* Step 3: Prompt Text Input */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+                  <span className="text-[9px] font-black uppercase tracking-wider text-black bg-bg-page px-2 py-0.5 rounded border border-primary">
                     Step 3
                   </span>
                   <span className="text-[10px] text-slate-600 font-bold">
@@ -807,7 +807,7 @@ export default function StudioPage() {
                   className="w-full flex items-center justify-between px-4 py-3.5 text-[10px] font-black text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
                 >
                   <span className="uppercase tracking-wider flex items-center gap-1.5">
-                    <FaSlidersH className="text-indigo-600" /> Advanced Options
+                    <FaSlidersH className="text-primary" /> Advanced Options
                   </span>
                   {showAdvanced ? (
                     <FaChevronUp className="text-[9px] text-slate-400" />

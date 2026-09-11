@@ -307,7 +307,7 @@ export default function RoomStagerPage() {
         {/* Workspace Title */}
         <div className="px-5 py-4 border-b border-slate-100 flex-shrink-0">
           <h1 className="text-base font-bold text-slate-900 flex items-center gap-1.5 leading-none">
-            <FaMagic className="text-indigo-600 text-xs" /> Design Studio
+            <FaMagic className="text-primary text-xs" /> Design Studio
           </h1>
           <p className="text-[11px] text-slate-400 mt-1">Configure parameters to stage vacant spaces</p>
         </div>
@@ -363,7 +363,7 @@ export default function RoomStagerPage() {
                     onClick={() => setSelectedRoom(type.id)}
                     className={`flex items-center gap-2 px-3 py-2 rounded text-left border text-xs font-bold transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-bg-page border-indigo-200 text-black"
+                        ? "bg-bg-page border-primary text-black"
                         : "bg-white border-slate-200 text-black hover:bg-white"
                     }`}
                   >
@@ -388,7 +388,7 @@ export default function RoomStagerPage() {
                     onClick={() => setSelectedStyle(style.id)}
                     className={`flex flex-col items-start px-3 py-2.5 rounded text-left border text-xs transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-bg-page border-indigo-200 text-black font-bold"
+                        ? "bg-bg-page border-primary text-black font-bold"
                         : "bg-white border-slate-200 text-black hover:bg-white"
                     }`}
                     title={style.desc}
@@ -413,7 +413,7 @@ export default function RoomStagerPage() {
               </label>
               <button 
                 onClick={resetPrompt} 
-                className="text-[9px] font-bold text-indigo-600 hover:text-indigo-850 cursor-pointer"
+                className="text-[9px] font-bold text-primary hover:text-indigo-850 cursor-pointer"
                 type="button"
               >
                 Reset Default
@@ -442,7 +442,7 @@ export default function RoomStagerPage() {
               </>
             ) : (
               <>
-                <FaMagic className="text-xs text-indigo-400" />
+                <FaMagic className="text-xs text-primary" />
                 <span>Stage Room with AI</span>
               </>
             )}

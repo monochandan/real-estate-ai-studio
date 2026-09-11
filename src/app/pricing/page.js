@@ -8,10 +8,51 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 
 const PLANS = [
-  { id: "basic", name: "Basic Pack", price: "$5", credits: 100, description: "Perfect for testing custom prompts and exploring styles." },
-  { id: "standard", name: "Standard Pack", price: "$10", credits: 250, description: "Ideal for regular creators wanting high resolution outputs." },
-  { id: "pro", name: "Professional Pack", price: "$20", credits: 600, description: "Designed for power users demanding batch exports and high speed.", popular: true },
-  { id: "business", name: "Business Pack", price: "$50", credits: 2000, description: "Maximum value pack for agency workflows and large volume generations." }
+  { id: "basic", 
+    name: "Basic Pack", 
+    price: "$5", 
+    credits: 30, 
+    description: "Perfect for trying your first property.", 
+    usage: [
+      "≈ 3 decluttering edits",
+      "≈ 2 staging edits",
+      "≈ 1 short video",
+    ],
+  },
+  { id: "standard", 
+    name: "Standard Pack", 
+    price: "$10", 
+    credits: 70, 
+    description: "For agents working on a few property photos.",
+    usage: [
+      "≈ 8 decluttering edits",
+      "≈ 5 staging edits",
+      "≈ 3 short videos",
+    ],
+  },
+  { id: "pro", 
+    name: "Professional Pack", 
+    price: "$25", 
+    credits: 200, 
+    description: "Best value for active real-estate professionals.",
+    usage: [
+      "≈ 25 decluttering edits",
+      "≈ 16 staging edits",
+      "≈ 10 short videos",
+    ],
+    popular: true 
+  },
+  { id: "business", 
+    name: "Business Pack", 
+    price: "$50", 
+    credits: 450, 
+    description: "For agents and teams creating property content at scale.",
+    usage: [
+      "≈ 56 decluttering edits",
+      "≈ 37 staging edits",
+      "≈ 22 short videos",
+    ],
+  }
 ];
 
 export default function Pricing() {
@@ -53,7 +94,8 @@ export default function Pricing() {
           </div>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight uppercase">Buy Credits Packs</h1>
           <p className="text-xs sm:text-sm text-secondary-text max-w-lg leading-relaxed">
-            Purchase flexible credit packages to perform high-resolution predictions. Keep all profits — we handle AI infrastructure.
+           Use your credits for decluttering, virtual staging, and short
+            property videos. Buy more credits anytime.
           </p>
         </div>
 
@@ -75,7 +117,7 @@ export default function Pricing() {
               <div className="space-y-4">
                 <div className="space-y-1">
                   <h3 className="text-sm font-extrabold uppercase tracking-wide text-primary-text">{plan.name}</h3>
-                  <p className="text-2xl font-black tracking-tight text-white">{plan.price}</p>
+                  <p className="text-2xl font-black tracking-tight text-black">{plan.price}</p>
                 </div>
                 
                 <div className="text-xs bg-bg-page/50 border border-divider/30 p-3 rounded text-center font-extrabold text-primary">
@@ -85,7 +127,7 @@ export default function Pricing() {
                 <p className="text-xs text-secondary-text leading-relaxed font-medium min-h-[3rem]">{plan.description}</p>
                 
                 <ul className="space-y-2 border-t border-divider/30 pt-4 text-xs font-semibold text-secondary-text">
-                  <li className="flex items-center gap-2">
+                  {/* <li className="flex items-center gap-2">
                     <FaCheck className="text-primary text-[10px]" />
                     <span>Dynamic aspect ratios</span>
                   </li>
@@ -96,8 +138,40 @@ export default function Pricing() {
                   <li className="flex items-center gap-2">
                     <FaCheck className="text-primary text-[10px]" />
                     <span>No subscription required</span>
-                  </li>
+                  </li> */}
+                  {plan.usage.map((item) => (
+                    <li key={item} className="flex items-center gap-2">
+                      <FaCheck className="text-primary text-[10px] shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
                 </ul>
+
+
+                {/* Credit Costs */}
+                <div className="pt-2 text-[10px] text-secondary-text space-y-1">
+                  <div className="flex justify-between">
+                    <span>Decluttering</span>
+                    <span className="font-bold text-primary-text">
+                      8 credits
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span>Staging</span>
+                    <span className="font-bold text-primary-text">
+                      12 credits
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span>30-sec video</span>
+                    <span className="font-bold text-primary-text">
+                      20 credits
+                    </span>
+                  </div>
+                </div>
+    
               </div>
 
               <button
