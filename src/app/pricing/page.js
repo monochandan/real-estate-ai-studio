@@ -10,7 +10,7 @@ import toast, { Toaster } from "react-hot-toast";
 const PLANS = [
   { id: "basic", 
     name: "Basic Pack", 
-    price: "$5", 
+    price: "€5", 
     credits: 30, 
     description: "Perfect for trying your first property.", 
     usage: [
@@ -21,7 +21,7 @@ const PLANS = [
   },
   { id: "standard", 
     name: "Standard Pack", 
-    price: "$10", 
+    price: "€10", 
     credits: 70, 
     description: "For agents working on a few property photos.",
     usage: [
@@ -32,7 +32,7 @@ const PLANS = [
   },
   { id: "pro", 
     name: "Professional Pack", 
-    price: "$25", 
+    price: "€25", 
     credits: 200, 
     description: "Best value for active real-estate professionals.",
     usage: [
@@ -44,7 +44,7 @@ const PLANS = [
   },
   { id: "business", 
     name: "Business Pack", 
-    price: "$50", 
+    price: "€50", 
     credits: 450, 
     description: "For agents and teams creating property content at scale.",
     usage: [
