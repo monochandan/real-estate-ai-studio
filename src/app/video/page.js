@@ -469,7 +469,7 @@ export default function PropertyVideoPage() {
 
     if (credits < 10) {
       alert(
-        "You need at least 10 credits to generate a property video."
+        "You need at least 20 credits to generate a property video."
       );
       return;
     }
