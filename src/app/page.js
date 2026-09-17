@@ -29,6 +29,9 @@ const STYLES = [
   { id: "rustic",       name: "Rustic Cabin",    emoji: "🌲", desc: "Rough timbers, natural stone" },
 ];
 
+// const service = "room-staging";
+const requiredCredits = 12; // ideally get this from your service config
+
 const EXAMPLES = [
   {
     id: "scandinavian-living",
@@ -57,7 +60,7 @@ const EXAMPLES = [
 ];
 
 export default function RoomStagerPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   // Selection state
   const [selectedRoom, setSelectedRoom] = useState(ROOM_TYPES[0].id);
@@ -65,7 +68,7 @@ export default function RoomStagerPage() {
   const [userPrompt, setUserPrompt] = useState("");
   const [originalImage, setOriginalImage] = useState("");
   const [stagedImage, setStagedImage] = useState("");
-  
+  const [credits, setCredits] = useState(0);
   // Slider interaction
   const [sliderPosition, setSliderPosition] = useState(50);
   const isDragging = useRef(false);
@@ -77,6 +80,8 @@ export default function RoomStagerPage() {
   const [stagingError, setStagingError] = useState("");
   const [stagingTimer, setStagingTimer] = useState(15);
   const [stagedRoomId, setStagedRoomId] = useState("");
+
+  const [loadingCredits, setLoadingCredits] = useState(false);
 
   // Loading default example on mount, or parsing query parameters to load generated details
   useEffect(() => {
@@ -204,10 +209,41 @@ export default function RoomStagerPage() {
 
   // Staging trigger logic
   const handleStageRoom = async () => {
-    if (!session?.user) { signIn("google"); return; }
+    // Logged-out users always have 0 credits
+    if(status !== "authenticated")
+    {
+      setCredits(0);
+      return;
+    }
+    // if (!session?.user) { signIn("google"); return; }
     if (!originalImage) { alert("Please upload a room photo first!"); return; }
-    if ((session.user.credits ?? 0) < 6) { alert("You need at least 6 credits to stage a room."); return; }
+    // converting session by accessing the database value of credits
+    //if ((session.user.credits ?? 0) < 12) { alert("You need at least 12 credits to stage a room."); return; }
+    try {
+        setLoadingCredits(true);
 
+        const res = await fetch("/api/user/credits");
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch credits");
+        }
+
+        const data = await res.json();
+        const currentCredits = data.credits ?? 0;
+
+        setCredits(currentCredits);
+        if(currentCredits < requiredCredits){
+          alert(`You need at least ${requiredCredits} credits to stage a room.`);
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to fetch user credits:", error);
+        setCredits(0);
+      } finally {
+        setLoadingCredits(false);
+      }
+
+    // if ((credits ?? 0) < 12) { alert("You need at least 12 credits to stage a room."); return; }
     setStagingStatus("staging");
     setStagingError("");
     setStagingTimer(15);
@@ -238,6 +274,20 @@ export default function RoomStagerPage() {
             if (statusRes.ok) {
               const room = await statusRes.json();
               if (room.status === "completed") {
+                const creditRes = await fetch("/api/user/credits", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    service: "room-staging",
+                  }),
+                });
+
+                if (!creditRes.ok) {
+                  throw new Error("Failed to deduct credits");
+                }
+
+                const creditData = await creditRes.json();
+                setCredits(creditData.credits);
                 clearInterval(pollInterval);
                 clearInterval(timerInterval);
                 setStagedImage(room.stagedImage);
