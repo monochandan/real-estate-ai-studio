@@ -1,4 +1,4 @@
-import NextAuth from "next-auth"; // imports the nextauth factor function (authentication olution for Next.js)
+import NextAuth from "next-auth"; // imports the nextauth factor function (authentication solution for Next.js)
 
 // imports configuration objects (providers, callbacks, session strategy, etc.) from the auth.js file
 import { authOptions } from "@/lib/auth";
