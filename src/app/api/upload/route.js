@@ -3,7 +3,12 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../lib/auth";
 import config from "../../../lib/config";
 
+// It takes the user's original image, stores/encodes it, 
+// and returns a URL that your staging API 
+// can later use as the AI input image.
+
 export async function POST(req) {
+  let file;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -16,7 +21,8 @@ export async function POST(req) {
     if (!file) {
       return new NextResponse("No file uploaded", { status: 400 });
     }
-
+    // If MuAPI is configured
+    // If MuAPI is configured → it uploads the image to MuAPI and returns MuAPI's image URL.
     const apiKey = config.ai.apiKey;
     if (!apiKey || apiKey.includes("your_") || apiKey.trim() === "") {
       // Fallback: Convert to Base64 dataURL
@@ -44,16 +50,20 @@ export async function POST(req) {
     }
 
     const result = await uploadRes.json();
+
+    // return an url
     return NextResponse.json({ url: result.url || result.file_url });
   } catch (error) {
     console.error("[UPLOAD]", error);
     // Fallback: convert to base64 DataURL
+    // If MuAPI isn't configured → it converts the same image to a Base64 data:image/... URL and returns that.
     try {
       if (file) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
         const base64Image = buffer.toString("base64");
         const dataUrl = `data:${file.type};base64,${base64Image}`;
+        // forntend receves the original image
         return NextResponse.json({ url: dataUrl });
       }
     } catch (e) {

@@ -185,17 +185,27 @@ export default function RoomStagerPage() {
   }, []);
 
   // Image Uploading logic
+  // It takes the user's original image, stores/encodes it, 
+  // and returns a URL that your staging API 
+  // can later use as the AI input image.
+
+  // one thing to the frontend: a URL representing the uploaded image.
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
+    // user select an image
+    const file = e.target.files[0]; 
     if (!file) return;
     setIsUploading(true);
+    // send the file to the backend upload as multipart/form-data
     const fd = new FormData();
     fd.append("file", file);
+    // send the file to the backend upload
     try {
       const res = await fetch("/api/upload", { method: "POST", body: fd });
       if (res.ok) {
         const d = await res.json();
         if (d.url) {
+          // from line 48 (upload/route.js) the url land here
+          // if failed: originalImage contains the entire image as a Base64 data URL.
           setOriginalImage(d.url);
           setStagedImage(""); // Clear previous staged image
         }
