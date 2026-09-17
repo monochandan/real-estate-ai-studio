@@ -379,10 +379,10 @@ export default function StudioPage() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const timerRef = useRef(null);
 
-  // Load last creation on mount
+  // Load last creation on mount - restores the user's most recent AI image gneeration on page load
   useEffect(() => {
     if (typeof window !== "undefined" && session?.user) {
-      fetch("/api/creations")
+      fetch("/api/declutter/generation")
         .then((r) => (r.ok ? r.json() : null))
         .then((list) => {
           if (Array.isArray(list) && list.length > 0) {
@@ -425,7 +425,7 @@ export default function StudioPage() {
     if (generatingStatus !== "generating" || !creationId) return;
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/creations?id=${creationId}`);
+        const res = await fetch(`/api/declutter/generation?id=${creationId}`);
         if (res.ok) {
           const data = await res.json();
           if (data.status === "completed" && data.resultImage) {

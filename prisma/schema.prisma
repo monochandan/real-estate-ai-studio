@@ -5,8 +5,11 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
+  // I have to add url from .env file
+  // url      = env("DATABASE_URL")
+  // run npx prisma migrate dev --name init (neon), for supabase ???
 }
-
+// from nextauth
 model Account {
   id                 String  @id @default(cuid())
   userId             String

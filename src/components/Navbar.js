@@ -10,6 +10,8 @@ import { SiVercel } from "react-icons/si";
 import config from "@/lib/config";
 import toast from "react-hot-toast";
 
+// I am working with this navbar, not layout/Navbar.jsx
+
 export default function Navbar() {
   const { data: session, status, update: updateSession } = useSession();
   const pathname = usePathname();
@@ -36,8 +38,9 @@ export default function Navbar() {
   const navLinks = currentAppId
     ? [
         { name: "Staging", path: `/app/${currentAppId}` },
-        { name: "Decluttering", path: `/app/${currentAppId}/declutter` },
+        { name: "Decluttering", path: `/app/${currentAppId}/declutter`},
         { name: "Video", path: `/app/${currentAppId}/video` },
+        { name: "Property Prep", path: `/app/${currentAppId}/propertyprep`},
         { name: "Gallery", path: `/app/${currentAppId}/gallery` },
         { name: "Pricing", path: `/app/${currentAppId}/pricing` },
       ]
@@ -45,6 +48,7 @@ export default function Navbar() {
         { name: "Staging", path: "/" },
         { name: "Decluttering", path: `/declutter` },
         { name: "Video", path: `/video` },
+        { name: "Property Prep", path: `/propertyprep`},
         { name: "Gallery", path: "/gallery" },
         { name: "Pricing", path: "/pricing" },
       ];
