@@ -9,28 +9,67 @@ import { FiMoon, FiSun, FiLogOut, FiDollarSign, FiPlus, FiUser, FiKey, FiCheck, 
 import { SiVercel } from "react-icons/si";
 import config from "@/lib/config";
 import toast from "react-hot-toast";
-
+import appicon from "@/images/appicon.png";
+import Image from "next/image";
 // I am working with this navbar, not layout/Navbar.jsx
 
 export default function Navbar() {
+  // we can use this nextauth seesion because of provider.js
+  // by wrapping all childrens in layout.js
   const { data: session, status, update: updateSession } = useSession();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
-  const [apiKeyInput, setApiKeyInput] = useState("");
-  const [savingKey, setSavingKey] = useState(false);
+  // const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+  // const [apiKeyInput, setApiKeyInput] = useState("");
+  // const [savingKey, setSavingKey] = useState(false);
+
+  const [credits, setCredits] = useState(0);
+  const [loadingCredits, setLoadingCredits] = useState(false);
 
   const appName = config?.appName || "AI SaaS";
-  const logoLetter = appName.trim().charAt(0).toUpperCase();
+  // const logoLetter = appName.trim().charAt(0).toUpperCase();
 
-  const isApiKeyActive = Boolean(session?.user?.customApiKey);
+  // const isApiKeyActive = Boolean(session?.user?.customApiKey);
 
+  // useEffect(() => {
+  //   if (session?.user?.customApiKey) {
+  //     setApiKeyInput(session.user.customApiKey);
+  //   }
+  // }, [session?.user?.customApiKey]);
+
+  // Fetch the current credit balance from the database
   useEffect(() => {
-    if (session?.user?.customApiKey) {
-      setApiKeyInput(session.user.customApiKey);
-    }
-  }, [session?.user?.customApiKey]);
+    const fetchCredits = async () => {
+      // Logged-out users always have 0 credits
+      if (status !== "authenticated") {
+        setCredits(0);
+        return;
+      }
+
+      try {
+        setLoadingCredits(true);
+
+        const res = await fetch("/api/user/credits");
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch credits");
+        }
+
+        const data = await res.json();
+
+        setCredits(data.credits ?? 0);
+      } catch (error) {
+        console.error("Failed to fetch user credits:", error);
+        setCredits(0);
+      } finally {
+        setLoadingCredits(false);
+      }
+    };
+
+    fetchCredits();
+  }, [status]);
+
 
   const appMatch = pathname ? pathname.match(/^\/app\/([^\/]+)/) : null;
   const currentAppId = appMatch ? appMatch[1] : null;
@@ -53,65 +92,65 @@ export default function Navbar() {
         { name: "Pricing", path: "/pricing" },
       ];
 
-  const handleSaveApiKey = async (e) => {
-    e.preventDefault();
-    const key = apiKeyInput.trim();
-    if (!key) {
-      toast.error("Please enter a valid API Key");
-      return;
-    }
-    setSavingKey(true);
-    try {
-      if (status === "authenticated") {
-        const res = await fetch("/api/user/apikey", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ apiKey: key }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed to save API key");
+  // const handleSaveApiKey = async (e) => {
+  //   e.preventDefault();
+  //   const key = apiKeyInput.trim();
+  //   if (!key) {
+  //     toast.error("Please enter a valid API Key");
+  //     return;
+  //   }
+  //   setSavingKey(true);
+  //   try {
+  //     if (status === "authenticated") {
+  //       const res = await fetch("/api/user/apikey", {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ apiKey: key }),
+  //       });
+  //       const data = await res.json();
+  //       if (!res.ok) throw new Error(data.error || "Failed to save API key");
 
-        await updateSession({ customApiKey: key });
-        toast.success("Custom API Key updated!");
-        setIsApiKeyModalOpen(false);
-        window.location.reload();
-      } else {
-        const res = await signIn("credentials", {
-          apiKey: key,
-          redirect: false,
-        });
-        if (res?.error) {
-          throw new Error(res.error || "Failed to sign in with API key");
-        }
-        toast.success("Signed in with API Key!");
-        setIsApiKeyModalOpen(false);
-        window.location.reload();
-      }
-    } catch (err) {
-      toast.error(err.message || "Failed to save API Key");
-    } finally {
-      setSavingKey(false);
-    }
-  };
+  //       await updateSession({ customApiKey: key });
+  //       toast.success("Custom API Key updated!");
+  //       setIsApiKeyModalOpen(false);
+  //       window.location.reload();
+  //     } else {
+  //       const res = await signIn("credentials", {
+  //         apiKey: key,
+  //         redirect: false,
+  //       });
+  //       if (res?.error) {
+  //         throw new Error(res.error || "Failed to sign in with API key");
+  //       }
+  //       toast.success("Signed in with API Key!");
+  //       setIsApiKeyModalOpen(false);
+  //       window.location.reload();
+  //     }
+  //   } catch (err) {
+  //     toast.error(err.message || "Failed to save API Key");
+  //   } finally {
+  //     setSavingKey(false);
+  //   }
+  // };
 
-  const handleRemoveApiKey = async () => {
-    setSavingKey(true);
-    try {
-      const res = await fetch("/api/user/apikey", { method: "DELETE" });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to remove API key");
+  // const handleRemoveApiKey = async () => {
+  //   setSavingKey(true);
+  //   try {
+  //     const res = await fetch("/api/user/apikey", { method: "DELETE" });
+  //     const data = await res.json();
+  //     if (!res.ok) throw new Error(data.error || "Failed to remove API key");
 
-      await updateSession({ customApiKey: null });
-      setApiKeyInput("");
-      toast.success("Custom API Key removed");
-      setIsApiKeyModalOpen(false);
-      window.location.reload();
-    } catch (err) {
-      toast.error(err.message || "Failed to remove API Key");
-    } finally {
-      setSavingKey(false);
-    }
-  };
+  //     await updateSession({ customApiKey: null });
+  //     setApiKeyInput("");
+  //     toast.success("Custom API Key removed");
+  //     setIsApiKeyModalOpen(false);
+  //     window.location.reload();
+  //   } catch (err) {
+  //     toast.error(err.message || "Failed to remove API Key");
+  //   } finally {
+  //     setSavingKey(false);
+  //   }
+  // };
 
   return (
     <header className="sticky top-0 z-50 w-full glass-panel border-b border-divider/50 shadow-md">
@@ -120,7 +159,8 @@ export default function Navbar() {
         {/* Logo and Brand Title */}
         <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white font-extrabold text-lg shadow-md shadow-primary/30">
-            {logoLetter}
+            {/* {logoLetter} */}
+            <Image src={appicon} alt="Logo" width={40} height={40} priority/>
           </div>
           <span className="text-lg font-black tracking-tight text-primary-text text-nowrap">
             {appName}
@@ -178,7 +218,7 @@ export default function Navbar() {
           {status === "authenticated" ? (
             <div className="flex items-center">
               {/* Credit Balance indicator */}
-              <div className="flex items-center h-9 border border-divider rounded-l bg-bg-page/30 overflow-hidden pr-2">
+              {/* <div className="flex items-center h-9 border border-divider rounded-l bg-bg-page/30 overflow-hidden pr-2">
                 <span className="font-bold text-[13px] px-3 flex items-center text-primary-text gap-1">
                   <FiDollarSign className="text-emerald-500 text-xs" />
                   {isApiKeyActive ? "∞ (API Key)" : session.user.credits !== undefined ? session.user.credits : 0}
@@ -191,7 +231,18 @@ export default function Navbar() {
                     <FiPlus size={14} />
                   </Link>
                 )}
-              </div>
+              </div> */}
+
+              <Link
+                href="/pricing"
+                className="flex items-center gap-1.5 h-9 px-3 border border-divider rounded bg-bg-page/30 hover:bg-bg-page transition-colors"
+              >
+                <FaCoins className="text-amber-400" />
+                <span className="font-bold text-[13px] text-primary-text">
+                  {loadingCredits ? "..." : credits}
+                </span>
+                <FiPlus size={14} className="text-secondary-text" />
+              </Link>
 
               {/* Profile Menu Toggle */}
               <div className="relative">
@@ -217,13 +268,13 @@ export default function Navbar() {
                     <div className="px-3 py-2 text-xs text-secondary-text border-b border-divider/50 mb-1 truncate">
                       {session.user.email}
                     </div>
-                    <button
+                    {/* <button
                       onClick={() => setIsApiKeyModalOpen(true)}
                       className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-xs font-semibold text-primary-text hover:bg-primary/10 transition-colors"
                     >
                       <FiKey size={14} className="text-amber-400" />
                       <span>{isApiKeyActive ? "Manage API Key" : "Add API Key"}</span>
-                    </button>
+                    </button> */}
                     <button
                       onClick={() => signOut({ callbackUrl: "/login" })}
                       className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-xs font-semibold text-red-500 hover:bg-red-500/10 transition-colors"
@@ -247,12 +298,22 @@ export default function Navbar() {
 
         {/* Mobile Navbar Controls */}
         <div className="flex md:hidden items-center gap-2">
-          {status === "authenticated" && (
+          {/* {status === "authenticated" && (
             <div className="flex items-center h-8 border border-divider rounded bg-bg-page/30 px-2.5 text-xs font-bold text-primary-text gap-0.5">
               <FiDollarSign className="text-emerald-500 text-[10px]" />
               {isApiKeyActive ? "∞ Key" : session.user.credits !== undefined ? session.user.credits : 0}
             </div>
-          )}
+          )} */}
+
+          {status === "authenticated" && (
+          <Link
+            href="/pricing"
+            className="flex items-center h-8 border border-divider rounded bg-bg-page/30 px-2.5 text-xs font-bold text-primary-text gap-1.5"
+          >
+            <FaCoins className="text-amber-400" />
+            {loadingCredits ? "..." : credits}
+          </Link>
+        )}
           
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -282,7 +343,7 @@ export default function Navbar() {
               </Link>
             ))}
 
-            <button
+            {/* <button
               onClick={() => {
                 setIsOpen(false);
                 setIsApiKeyModalOpen(true);
@@ -293,7 +354,7 @@ export default function Navbar() {
                 <FiKey />
                 <span>{isApiKeyActive ? "Manage Custom API Key" : "Add API Key"}</span>
               </div>
-            </button>
+            </button> */}
 
             <div className="h-px bg-divider/50 my-2" />
 
@@ -333,7 +394,7 @@ export default function Navbar() {
       )}
 
       {/* API Key Modal */}
-      {isApiKeyModalOpen && (
+      {/* {isApiKeyModalOpen && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="bg-bg-card border border-divider w-full max-w-md rounded-xl p-6 space-y-5 shadow-2xl animate-scale-up">
             <div className="flex items-center justify-between border-b border-divider/60 pb-3">
@@ -401,7 +462,7 @@ export default function Navbar() {
             </form>
           </div>
         </div>
-      )}
+      )} */}
     </header>
   );
 }

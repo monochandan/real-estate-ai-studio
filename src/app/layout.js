@@ -3,6 +3,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import Navbar from "../components/Navbar";
 import config from "@/lib/config";
+// import type { Metadata } from "next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -17,6 +18,9 @@ const outfit = Outfit({
 export const metadata = {
   title: "EstateStager AI - Virtual Home Staging SaaS",
   description: "Upload room photos, select room types and templates, and virtually stage vacant spaces instantly with photorealistic AI designs.",
+  icons: {
+    appicon: "/images/appicon.png"
+  },
 };
 
 export default function RootLayout({ children }) {

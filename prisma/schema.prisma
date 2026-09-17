@@ -36,54 +36,169 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// model User {
+//   id            String             @id @default(cuid())
+//   name          String?
+//   email         String?            @unique
+//   emailVerified DateTime?
+//   image         String?
+//   credits       Int                @default(10)
+//   customApiKey  String?            @db.Text
+//   accounts      Account[]
+//   sessions      Session[]
+//   stagedRooms   StagedRoom[]
+//   roomDeclutters RoomDeclutter[]
+// }
+
+// model StagedRoom {
+//   id            String    @id @default(cuid())
+//   roomType      String    // Living Room, Bedroom, Kitchen, etc.
+//   designStyle   String    // Modern, Scandinavian, Boho, Industrial, etc.
+//   originalImage String    @db.Text
+//   stagedImage   String    @db.Text
+//   userPrompt    String?   @db.Text
+//   status        String    @default("completed") // generating, completed, failed
+//   requestId     String?
+//   createTime    DateTime  @default(now())
+//   updateTime    DateTime  @updatedAt
+//   userId        String
+//   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+// }
+
+// model RoomDeclutter {
+//   id          String   @id @default(cuid())
+//   userId      String
+//   inputImage  String
+//   resultImage String   @default("")
+//   prompt      String
+//   roomType    String
+//   modelName   String
+//   requestId   String   @unique
+//   status      String   @default("processing")
+//   creditCost  Int      @default(12)
+//   createdAt   DateTime @default(now())
+//   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+// }
+
+// model VerificationToken {
+//   identifier String
+//   token      String   @unique
+//   expires    DateTime
+
+//   @@unique([identifier, token])
+// }
+
+
+
 model User {
-  id            String             @id @default(cuid())
+  id            String   @id @default(cuid())
   name          String?
-  email         String?            @unique
+  email         String?  @unique
   emailVerified DateTime?
   image         String?
-  credits       Int                @default(10)
-  customApiKey  String?            @db.Text
+
+  credits       Int      @default(10)
+
   accounts      Account[]
   sessions      Session[]
-  stagedRooms   StagedRoom[]
-  roomDeclutters RoomDeclutter[]
+  projects      Project[]
+  creditTransactions CreditTransaction[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
-model StagedRoom {
-  id            String    @id @default(cuid())
-  roomType      String    // Living Room, Bedroom, Kitchen, etc.
-  designStyle   String    // Modern, Scandinavian, Boho, Industrial, etc.
-  originalImage String    @db.Text
-  stagedImage   String    @db.Text
-  userPrompt    String?   @db.Text
-  status        String    @default("completed") // generating, completed, failed
-  requestId     String?
-  createTime    DateTime  @default(now())
-  updateTime    DateTime  @updatedAt
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model RoomDeclutter {
+model Project {
   id          String   @id @default(cuid())
   userId      String
-  inputImage  String
-  resultImage String   @default("")
-  prompt      String
-  roomType    String
-  modelName   String
-  requestId   String   @unique
-  status      String   @default("processing")
-  creditCost  Int      @default(12)
-  createdAt   DateTime @default(now())
+  name        String?
+  
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assets      Asset[]
+  jobs        GenerationJob[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
+model Asset {
+  id          String   @id @default(cuid())
+  projectId   String
 
-  @@unique([identifier, token])
+  type        AssetType
+  url         String   @db.Text
+
+  // Useful for images
+  roomType    String?
+  
+  // For generated assets
+  sourceAssetId String?
+  sourceAsset   Asset? @relation("AssetVersions", fields: [sourceAssetId], references: [id])
+  versions      Asset[] @relation("AssetVersions")
+
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+}
+
+enum AssetType {
+  ORIGINAL_IMAGE
+  GENERATED_IMAGE
+  VIDEO
+}
+
+model GenerationJob {
+  id            String   @id @default(cuid())
+  projectId     String
+
+  type          GenerationType
+  status        GenerationStatus @default(PROCESSING)
+
+  requestId     String?  @unique
+  creditCost    Int
+
+  prompt        String?  @db.Text
+  settings      Json?
+
+  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  completedAt   DateTime?
+}
+
+enum GenerationType {
+  STAGING
+  DECLUTTER
+  VIDEO
+}
+
+enum GenerationStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model CreditTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+
+  amount      Int
+  type        CreditTransactionType
+  description String?
+
+  // Link to generation/payment if necessary
+  jobId       String?
+  paymentId   String?
+
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+}
+
+enum CreditTransactionType {
+  PURCHASE
+  GENERATION
+  REFUND
+  BONUS
+  ADJUSTMENT
 }

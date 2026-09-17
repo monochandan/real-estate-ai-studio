@@ -22,6 +22,39 @@ function LoginContent() {
     }
   }, [status, router, next]);
 
+
+  // Fetch the current credit balance from the database
+  useEffect(() => {
+    const fetchCredits = async () => {
+      // Logged-out users always have 0 credits
+      if (status !== "authenticated") {
+        setCredits(0);
+        return;
+      }
+
+      try {
+        setLoadingCredits(true);
+
+        const res = await fetch("/api/user/credits");
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch credits");
+        }
+
+        const data = await res.json();
+
+        setCredits(data.credits ?? 0);
+      } catch (error) {
+        console.error("Failed to fetch user credits:", error);
+        setCredits(0);
+      } finally {
+        setLoadingCredits(false);
+      }
+    };
+
+    fetchCredits();
+  }, [status]);
+
   // api key login function 
   // const handleApiKeyLogin = async (e) => {
   //   e.preventDefault();
