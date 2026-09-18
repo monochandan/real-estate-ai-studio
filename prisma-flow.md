@@ -57,8 +57,25 @@ npx prisma validate
 # 3. Create database tables
 npx prisma migrate dev --name init
 
+----------------------------------------------
 # 4. Generate Prisma client
 npx prisma generate
+
+## ERROR
+npm list prisma @prisma/client
+npm install -D prisma@6.19.3
+npm install @prisma/client@6.19.3
+
+If they already match, reinstall them
+
+## In PowerShell:
+
+Remove-Item -Recurse -Force node_modules
+Remove-Item -Force package-lock.json
+npm install
+
+
+-----------------------------------------------
 
 # 5. Inspect database
 npx prisma studio
