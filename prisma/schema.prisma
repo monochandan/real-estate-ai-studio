@@ -1,3 +1,7 @@
+// generator client {
+//   provider      = "prisma-client-js"
+//   binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
+// }
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
@@ -5,25 +9,32 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  // I have to add url from .env file
-  // url      = env("DATABASE_URL")
-  // run npx prisma migrate dev --name init (neon), for supabase ???
+  // already comming from prisma.config.ts
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
+
+// datasource db {
+//   provider  = "postgresql"
+//   // I have to add url from .env file
+//   // url      = env("DATABASE_URL")
+//   // run npx prisma migrate dev --name init (neon), for supabase ???
+// }
 // from nextauth
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -88,57 +99,58 @@ model Session {
 //   @@unique([identifier, token])
 // }
 
-
-
 model User {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String?  @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
 
-  credits       Int      @default(10)
+  credits Int @default(10)
 
-  accounts      Account[]
-  sessions      Session[]
-  projects      Project[]
+  accounts           Account[]
+  sessions           Session[]
+  projects           Project[]
   creditTransactions CreditTransaction[]
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Project {
-  id          String   @id @default(cuid())
-  userId      String
-  name        String?
-  
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  assets      Asset[]
-  jobs        GenerationJob[]
+  id     String  @id @default(cuid())
+  userId String
+  name   String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assets Asset[]
+  jobs   GenerationJob[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Asset {
-  id          String   @id @default(cuid())
-  projectId   String
+  id        String @id @default(cuid())
+  projectId String
 
-  type        AssetType
-  url         String   @db.Text
+  type AssetType
+  url  String    @db.Text
 
   // Useful for images
-  roomType    String?
-  
+  roomType String?
+
   // For generated assets
   sourceAssetId String?
-  sourceAsset   Asset? @relation("AssetVersions", fields: [sourceAssetId], references: [id])
+  sourceAsset   Asset?  @relation("AssetVersions", fields: [sourceAssetId], references: [id])
   versions      Asset[] @relation("AssetVersions")
 
-  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
+  inputJobs  GenerationJob[] @relation("JobInputAsset")
+  outputJobs GenerationJob[] @relation("JobOutputAsset")
+
+  createdAt DateTime @default(now())
 }
 
 enum AssetType {
@@ -148,22 +160,30 @@ enum AssetType {
 }
 
 model GenerationJob {
-  id            String   @id @default(cuid())
-  projectId     String
+  id        String @id @default(cuid())
+  projectId String
 
-  type          GenerationType
-  status        GenerationStatus @default(PROCESSING)
+  type   GenerationType
+  status GenerationStatus @default(PROCESSING)
 
-  requestId     String?  @unique
-  creditCost    Int
+  requestId  String? @unique
+  creditCost Int
 
-  prompt        String?  @db.Text
-  settings      Json?
+  prompt   String? @db.Text
+  settings Json?
 
-  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  inputAssetId  String?
+  outputAssetId String?
 
-  createdAt     DateTime @default(now())
-  completedAt   DateTime?
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  inputAsset  Asset? @relation("JobInputAsset", fields: [inputAssetId], references: [id])
+  outputAsset Asset? @relation("JobOutputAsset", fields: [outputAssetId], references: [id])
+
+  creditTransactions CreditTransaction[]
+
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
 }
 
 enum GenerationType {
@@ -179,20 +199,21 @@ enum GenerationStatus {
 }
 
 model CreditTransaction {
-  id          String   @id @default(cuid())
-  userId      String
+  id     String @id @default(cuid())
+  userId String
 
   amount      Int
   type        CreditTransactionType
   description String?
 
   // Link to generation/payment if necessary
-  jobId       String?
-  paymentId   String?
+  jobId     String?
+  paymentId String?
 
-  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  GenerationJob? @relation(fields: [jobId], references: [id], onDelete: SetNull)
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 enum CreditTransactionType {

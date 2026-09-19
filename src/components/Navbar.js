@@ -68,6 +68,17 @@ export default function Navbar() {
     };
 
     fetchCredits();
+
+    // dispatch event listener from stagging page.js (302-303)
+    const handleCreditsUpdated = () => {
+      fetchCredits();
+    };
+
+    window.addEventListener("credits-updated", handleCreditsUpdated);
+
+    return () => {
+      window.removeEventListener("credits-updated", handleCreditsUpdated);
+    };
   }, [status]);
 
 

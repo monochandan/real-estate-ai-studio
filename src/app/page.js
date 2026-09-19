@@ -298,6 +298,10 @@ export default function RoomStagerPage() {
 
                 const creditData = await creditRes.json();
                 setCredits(creditData.credits);
+
+                // Tell Navbar to refresh its credit balance
+                window.dispatchEvent(new Event("credits-updated"));
+                
                 clearInterval(pollInterval);
                 clearInterval(timerInterval);
                 setStagedImage(room.stagedImage);
@@ -307,7 +311,7 @@ export default function RoomStagerPage() {
                 // Update URL parameters and reload to refresh credits cleanly while keeping custom details visible!
                 setTimeout(() => {
                   window.history.pushState(null, "", `/?id=${room.id}`);
-                  window.location.reload();
+                  // window.location.reload();
                 }, 1500);
               } else if (room.status === "failed") {
                 clearInterval(pollInterval);
@@ -508,7 +512,7 @@ export default function RoomStagerPage() {
             )}
           </button>
           <div className="flex items-center justify-between text-[9px] font-semibold text-slate-400 px-1">
-            <span>Staging Cost: 6 Credits</span>
+            <span>Staging Cost: 12 Credits</span>
             <span className="flex items-center gap-1 font-bold text-amber-600 bg-amber-50 border border-amber-100 rounded-full px-1.5 py-0.5">
               <FaCoins className="text-amber-400" /> Free with active credits
             </span>

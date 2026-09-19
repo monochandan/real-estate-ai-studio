@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { getUserCredits, consumeCredits } from "@/lib/credits";
 const costs = {
   "room-staging": 12,
-  "iroom-decluttering": 8,
+  "room-decluttering": 8,
   "virtual-tour": 20,
 };
 
