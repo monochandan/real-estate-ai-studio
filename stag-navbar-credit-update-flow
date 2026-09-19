@@ -1,0 +1,19 @@
+Staging completed
+       ↓
+POST /api/user/credits
+       ↓
+Database: 10 → 4
+       ↓
+API returns { credits: 4 }
+       ↓
+setCredits(4)       ← staging page
+       ↓
+dispatch "credits-updated"
+       ↓
+Navbar hears event
+       ↓
+GET /api/user/credits
+       ↓
+Database says 4
+       ↓
+Navbar displays 🪙 4
