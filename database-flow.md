@@ -1,3 +1,4 @@
+````
 Your Prisma schema
        ↓
 Defines what your database looks like
@@ -47,6 +48,7 @@ Prisma
 RoomDeclutter
    ↓
 Supabase
+````
 
 Supabase = where the actual database lives.
 Prisma = the layer your Next.js code uses to communicate with that database.
