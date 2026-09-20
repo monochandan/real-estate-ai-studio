@@ -1,3 +1,39 @@
+#Staging api workflow:
+POST /api/staging
+       ↓
+Check login
+       ↓
+Read originalImage
+       ↓
+Calculate cost
+       ↓
+Check user's credits
+       ↓
+Call MuAPI
+       ↓
+Wait for result
+       ↓
+Did staging succeed?
+       ↓
+      YES
+       ↓
+Prisma transaction
+       ↓
+Create Project
+       ↓
+Create ORIGINAL_IMAGE Asset
+       ↓
+Create GENERATED_IMAGE Asset
+       ↓
+Create GenerationJob
+       ↓
+Deduct User.credits
+       ↓
+Create CreditTransaction
+       ↓
+Return images + credits
+
+#After staging completed --> navbar credit
 Staging completed
        ↓
 POST /api/user/credits
