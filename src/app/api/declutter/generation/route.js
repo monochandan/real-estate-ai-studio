@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { UserService } from "@/lib/services/user";
+// import { UserService } from "@/lib/services/user";
 import config from "@/lib/config";
 
 const FALLBACK_MAP = {
@@ -46,25 +46,56 @@ export async function POST(req) {
     if (!prompt) {
       return new NextResponse("Prompt is required", { status: 400 });
     }
-
-    const headerApiKey = req.headers.get("x-custom-api-key");
-    const customApiKey = headerApiKey || body.customApiKey || session.user.customApiKey || null;
-    const isUsingCustomKey = Boolean(customApiKey && customApiKey.trim().length > 0);
+    ///// OLD VERSION -EARLY CREDIT DEDUCTION //////////////////////////////////////////////////////
+    // const headerApiKey = req.headers.get("x-custom-api-key");
+    // const customApiKey = headerApiKey || body.customApiKey || session.user.customApiKey || null;
+    // const isUsingCustomKey = Boolean(customApiKey && customApiKey.trim().length > 0);
 
     // Deduct credits based on model name and resolution (0 if custom API key active)
-    const modelCosts = (config.ai.generationCost && config.ai.generationCost[modelName]) || { "1k": 12, "2k": 18, "4k": 24 };
-    const cost = isUsingCustomKey ? 0 : (modelCosts[resolution] || 12);
+    // const modelCosts = (config.ai.generationCost && config.ai.generationCost[modelName]) || { "1k": 12, "2k": 18, "4k": 24 };
+    // const cost = isUsingCustomKey ? 0 : (modelCosts[resolution] || 12);
 
-    if (!isUsingCustomKey && cost > 0) {
-      try {
-        await UserService.deductCredits(session.user.id, cost);
-      } catch (e) {
+    // if (!isUsingCustomKey && cost > 0) {
+    //   try {
+    //     await UserService.deductCredits(session.user.id, cost);
+    //   } catch (e) {
+    //     return new NextResponse("Insufficient credits", { status: 402 });
+    //   }
+    // }
+    ////////////////////////////////////////////////////////////////////////////
+
+    //// NEW VERSION //////////////////////////////////////////////////////////
+    const modelCosts =
+        config.ai.declutteringGenerationCost[modelName];
+
+      if (!modelCosts) {
+        return new NextResponse("Invalid model", { status: 400 });
+      }
+
+    const cost = modelCosts[resolution];
+
+      if (!cost) {
+        return new NextResponse("Invalid resolution", { status: 400 });
+      }
+
+      // Check credits only — do NOT deduct yet
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { credits: true },
+      });
+
+      if (!user) {
+        return new NextResponse("User not found", { status: 404 });
+      }
+
+      if (user.credits < cost) {
         return new NextResponse("Insufficient credits", { status: 402 });
       }
-    }
+    ///////////////////////////////////////////////////////////////////
 
-    // Submit to MuAPI
-    const apiKey = isUsingCustomKey ? customApiKey.trim() : config.ai.apiKey;
+    // Submit to MuAPI -- NO CUSTOME API KEY
+    // const apiKey = isUsingCustomKey ? customAp1iKey.trim() : config.ai.apiKey;
+    const apiKey = config.ai.apiKey;
     let resultImage = "";
     let requestId = `mock_${Date.now()}`;
     let status = "processing";
@@ -174,45 +205,167 @@ export async function POST(req) {
       status = "completed";
     }
 
+    // NO DEDUCTION SO, REMOVE THIS BLOCK, 
     // Refund credits on immediate failure (only if credits were deducted)
-    if (status === "failed") {
-      if (!isUsingCustomKey && cost > 0) {
-        try {
-          await UserService.addCredits(session.user.id, cost);
-        } catch (refundErr) {
-          console.error("Failed to refund credits:", refundErr);
-        }
-      }
-      return NextResponse.json({ error: "Prediction failed" }, { status: 500 });
-    }
+    // if (status === "failed") {
+    //   if (!isUsingCustomKey && cost > 0) {
+    //     try {
+    //       await UserService.addCredits(session.user.id, cost);
+    //     } catch (refundErr) {
+    //       console.error("Failed to refund credits:", refundErr);
+    //     }
+    //   }
+    //   return NextResponse.json({ error: "Prediction failed" }, { status: 500 });
+    // }
+    //////////////////////////////////////////////////////////////////
 
     // Save to DB
-    const record = await prisma.roomDeclutter.create({
-      //imageUrl
-      // prompt
-      // roomType
-      // modelName
-      // aspectRatio
-      // googleSearch
-      // resolution
-      // outputFormat
+    // OLD VERSION OF DATABASE
+    // const record = await prisma.roomDeclutter.create({
+    //   //imageUrl
+    //   // prompt
+    //   // roomType
+    //   // modelName
+    //   // aspectRatio
+    //   // googleSearch
+    //   // resolution
+    //   // outputFormat
+    //   data: {
+    //     userId: session.user.id,
+    //     inputImage: imageUrl,
+    //     resultImage,
+    //     prompt,
+    //     roomType,
+    //     modelName,
+    //     requestId,
+    //     status,
+    //     creditCost: cost,
+    //   },
+    // });
+
+    // NEW VERSION OF DB
+    if (status !== "completed" || !resultImage) {
+      return NextResponse.json(
+        { error: "Prediction did not complete" },
+        { status: 500 }
+      );
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+    const project = await tx.project.create({
       data: {
         userId: session.user.id,
-        inputImage: imageUrl,
-        resultImage,
-        prompt,
-        roomType,
-        modelName,
-        requestId,
-        status,
-        creditCost: cost,
+        name: `${roomType} Decluttering`,
       },
     });
 
+    const originalAsset = await tx.asset.create({
+      data: {
+        projectId: project.id,
+        type: "ORIGINAL_IMAGE",
+        url: imageUrl,
+        roomType,
+      },
+    });
+
+    const generatedAsset = await tx.asset.create({
+      data: {
+        projectId: project.id,
+        type: "GENERATED_IMAGE",
+        url: resultImage,
+        roomType,
+        sourceAssetId: originalAsset.id,
+      },
+    });
+
+    const job = await tx.generationJob.create({
+      data: {
+        projectId: project.id,
+        type: "DECLUTTER",
+        status: "COMPLETED",
+        requestId,
+        creditCost: cost,
+        prompt,
+        settings: {
+          modelName,
+          aspectRatio,
+          googleSearch,
+          resolution,
+          outputFormat,
+        },
+        inputAssetId: originalAsset.id,
+        outputAssetId: generatedAsset.id,
+        creditsDeducted: false,
+        completedAt: new Date(),
+      },
+    });
+
+    // Atomic credit deduction
+    const updatedUser = await tx.user.updateMany({
+      where: {
+        id: session.user.id,
+        credits: {
+          gte: cost,
+        },
+      },
+      data: {
+        credits: {
+          decrement: cost,
+        },
+      },
+    });
+
+    if (updatedUser.count === 0) {
+      throw new Error("Insufficient credits");
+    }
+
+    const updatedCredits = await tx.user.findUnique({
+      where: {
+        id: session.user.id,
+      },
+      select: {
+        credits: true,
+      },
+    });
+
+    await tx.creditTransaction.create({
+      data: {
+        userId: session.user.id,
+        amount: -cost,
+        type: "GENERATION",
+        description: `Room decluttering - ${modelName} ${resolution}`,
+        jobId: job.id,
+      },
+    });
+
+    await tx.generationJob.update({
+      where: {
+        id: job.id,
+      },
+      data: {
+        creditsDeducted: true,
+      },
+    });
+
+    return {
+      projectId: project.id,
+      jobId: job.id,
+      resultImage: generatedAsset.url,
+      credits: updatedCredits.credits,
+    };
+});
+
+    // OLD VERSION OF RETURN
+    // return NextResponse.json({
+    //   id: record.id,
+    //   resultImage: record.resultImage,
+    //   status: record.status,
+    // });
+
+    // NEW VEVRSION OF RETURN
     return NextResponse.json({
-      id: record.id,
-      resultImage: record.resultImage,
-      status: record.status,
+      success: true,
+      ...result,
     });
   } catch (error) {
     console.error("[GENERATION_POST]", error);

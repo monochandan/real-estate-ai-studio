@@ -420,29 +420,30 @@ export default function StudioPage() {
     return () => clearInterval(timerRef.current);
   }, [generatingStatus]);
 
+  // REMOVE OLD VERSION
   // Auto-poll if status is processing
-  useEffect(() => {
-    if (generatingStatus !== "generating" || !creationId) return;
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/declutter/generation?id=${creationId}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.status === "completed" && data.resultImage) {
-            setResultImage(data.resultImage);
-            setGeneratingStatus("success");
-            updateSession();
-          } else if (data.status === "failed") {
-            setGeneratingError(
-              "Room decluttering generation failed. Please try again.",
-            );
-            setGeneratingStatus("error");
-          }
-        }
-      } catch {}
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [generatingStatus, creationId, updateSession]);
+  // useEffect(() => {
+  //   if (generatingStatus !== "generating" || !creationId) return;
+  //   const interval = setInterval(async () => {
+  //     try {
+  //       const res = await fetch(`/api/declutter/generation?id=${creationId}`);
+  //       if (res.ok) {
+  //         const data = await res.json();
+  //         if (data.status === "completed" && data.resultImage) {
+  //           setResultImage(data.resultImage);
+  //           setGeneratingStatus("success");
+  //           updateSession();
+  //         } else if (data.status === "failed") {
+  //           setGeneratingError(
+  //             "Room decluttering generation failed. Please try again.",
+  //           );
+  //           setGeneratingStatus("error");
+  //         }
+  //       }
+  //     } catch {}
+  //   }, 3000);
+  //   return () => clearInterval(interval);
+  // }, [generatingStatus, creationId, updateSession]);
 
   const handleSelectPreset = (preset) => {
     if (!session?.user) {
@@ -517,7 +518,7 @@ export default function StudioPage() {
     const activePreset = PRESETS.find((p) => p.id === selectedPresetId);
 
     try {
-      const res = await fetch("/api/generation", {
+      const res = await fetch("/api/declutter/generation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -541,14 +542,30 @@ export default function StudioPage() {
       }
       if (!res.ok) throw new Error("Generation failed");
 
-      const data = await res.json();
-      setCreationId(data.id);
-      updateSession();
+      // OLD VEVRSION
+      // const data = await res.json();
+      // setCreationId(data.id);
+      // updateSession();
 
-      if (data.status === "completed" && data.resultImage) {
-        setResultImage(data.resultImage);
-        setGeneratingStatus("success");
+      // NEW VERSION
+      const data = await res.json();
+      setCreationId(data.jobId);
+      setResultImage(data.resultImage);
+      // Refresh Navbar credits
+      window.dispatchEvent(new Event("credits-updated"));
+
+      // OLD VERSION
+      // if (data.status === "completed" && data.resultImage) {
+      //   setResultImage(data.resultImage);
+      //   setGeneratingStatus("success");
+      // }
+
+      // NEW VERSION
+      if (data.resultImage) {
+      setResultImage(data.resultImage);
+      setGeneratingStatus("success");
       }
+
     } catch {
       setGeneratingError(
         "An error occurred during AI processing. Please try again.",
