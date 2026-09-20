@@ -275,61 +275,95 @@ export default function RoomStagerPage() {
         })
       });
 
-      if (res.ok) {
-        const data = await res.json();
+      // prev if block
+      // if (res.ok) {
+      //   const data = await res.json();
         
-        const pollInterval = setInterval(async () => {
-          try {
-            const statusRes = await fetch(`/api/rooms?id=${data.roomId}`);
-            if (statusRes.ok) {
-              const room = await statusRes.json();
-              if (room.status === "completed") {
-                const creditRes = await fetch("/api/user/credits", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    service: "room-staging",
-                  }),
-                });
+      //   const pollInterval = setInterval(async () => {
+      //     try {
+      //       const statusRes = await fetch(`/api/rooms?id=${data.roomId}`);
+      //       if (statusRes.ok) {
+      //         const room = await statusRes.json();
+      //         if (room.status === "completed") {
+      //           // DEDUCTION IS DONE BY STAGE API, so removing this part for this page
+      //           // const creditRes = await fetch("/api/user/credits", {
+      //           //   method: "POST",
+      //           //   headers: { "Content-Type": "application/json" },
+      //           //   body: JSON.stringify({
+      //           //     service: "room-staging",
+      //           //   }),
+      //           // });
 
-                if (!creditRes.ok) {
-                  throw new Error("Failed to deduct credits");
-                }
+      //           // if (!creditRes.ok) {
+      //           //   throw new Error("Failed to deduct credits");
+      //           // }
 
-                const creditData = await creditRes.json();
-                setCredits(creditData.credits);
+      //           // const creditData = await creditRes.json();
+      //           // setCredits(creditData.credits);
 
-                // Tell Navbar to refresh its credit balance
-                window.dispatchEvent(new Event("credits-updated"));
+      //           // Tell Navbar to refresh its credit balance
+      //           // window.dispatchEvent(new Event("credits-updated"));
                 
-                clearInterval(pollInterval);
-                clearInterval(timerInterval);
-                setStagedImage(room.stagedImage);
-                setStagedRoomId(room.id);
-                setStagingStatus("success");
+      //           clearInterval(pollInterval);
+      //           clearInterval(timerInterval);
+      //           setStagedImage(room.stagedImage);
+      //           setStagedRoomId(room.id);
+      //           setStagingStatus("success");
+
+      //           // Tell Navbar to refresh its credit balance
+      //           window.dispatchEvent(new Event("credits-updated"));
                 
-                // Update URL parameters and reload to refresh credits cleanly while keeping custom details visible!
-                setTimeout(() => {
-                  window.history.pushState(null, "", `/?id=${room.id}`);
-                  // window.location.reload();
-                }, 1500);
-              } else if (room.status === "failed") {
-                clearInterval(pollInterval);
-                clearInterval(timerInterval);
-                setStagingStatus("error");
-                setStagingError("Virtual staging failed on the AI server.");
-              }
-            }
-          } catch (e) {
-            console.error("Client polling error:", e);
+      //           // Update URL parameters and reload to refresh credits cleanly while keeping custom details visible!
+      //           setTimeout(() => {
+      //             window.history.pushState(null, "", `/?id=${room.id}`);
+      //             // window.location.reload();
+      //           }, 1500);
+      //         } else if (room.status === "failed") {
+      //           clearInterval(pollInterval);
+      //           clearInterval(timerInterval);
+      //           setStagingStatus("error");
+      //           setStagingError("Virtual staging failed on the AI server.");
+      //         }
+      //       }
+      //     } catch (e) {
+      //       console.error("Client polling error:", e);
+      //     }
+      //   }, 2000);
+      // } else {
+      //   clearInterval(timerInterval);
+      //   const errText = await res.text();
+      //   setStagingStatus("error");
+      //   setStagingError(errText || "Failed to stage room");
+      // }
+
+      // New If block
+      if (res.ok) {
+            const data = await res.json();
+
+            clearInterval(timerInterval);
+
+            setStagedImage(data.stagedImage);
+            setOriginalImage(data.originalImage);
+            setStagedRoomId(data.jobId);
+            setCredits(data.credits);
+
+            // Tell Navbar to refresh its credit balance
+            window.dispatchEvent(new Event("credits-updated"));
+
+            setStagingStatus("success");
+
+            setTimeout(() => {
+              window.history.pushState(null, "", `/?id=${data.jobId}`);
+            }, 1500);
+
+          } else {
+            clearInterval(timerInterval);
+
+            const errText = await res.text();
+
+            setStagingStatus("error");
+            setStagingError(errText || "Failed to stage room");
           }
-        }, 2000);
-      } else {
-        clearInterval(timerInterval);
-        const errText = await res.text();
-        setStagingStatus("error");
-        setStagingError(errText || "Failed to stage room");
-      }
     } catch (e) {
       clearInterval(timerInterval);
       setStagingStatus("error");

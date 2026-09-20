@@ -33,15 +33,29 @@ export async function POST(req) {
     const isUsingCustomKey = Boolean(customApiKey && customApiKey.trim().length > 0);
 
     // Cost logic: 6 credits (0 if custom API key active)
-    const cost = isUsingCustomKey ? 0 : (config.ai.generationCost || 6);
+    const cost = isUsingCustomKey ? 0 : (config.ai.generationCost || 12);
 
+    // We don't want to charge the user yet.
+    // if (!isUsingCustomKey && cost > 0) {
+    //   try {
+    //     await UserService.deductCredits(session.user.id, cost);
+    //   } catch (err) {
+    //     return new NextResponse("Insufficient credits", { status: 402 });
+    //   }
+    // }
+
+    // Check credits before starting the AI job (removed above block, added this one)
     if (!isUsingCustomKey && cost > 0) {
-      try {
-        await UserService.deductCredits(session.user.id, cost);
-      } catch (err) {
-        return new NextResponse("Insufficient credits", { status: 402 });
-      }
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { credits: true },
+    });
+
+    if (!currentUser || currentUser.credits < cost) {
+      return new NextResponse("Insufficient credits", { status: 402 });
     }
+  }
+  /////////////////////////////////////////////////////
 
     // Process Staging
     const apiKey = isUsingCustomKey ? customApiKey.trim() : config.ai.apiKey;
@@ -118,28 +132,145 @@ export async function POST(req) {
       }
     }
 
+    // OLD DATA SCHEMA
     // Save records in StagedRoom
-    const isCompleted = stagedImage && stagedImage !== "";
-    const status = isCompleted ? "completed" : "generating";
+    // const isCompleted = stagedImage && stagedImage !== "";
+    // const status = isCompleted ? "completed" : "generating";
+    
+    // const room = await prisma.stagedRoom.create({
+    //   // roomType
+    //   // designStyle
+    //   // originalImage
+    //   // userPrompt
+    //   data: {
+    //     roomType,
+    //     designStyle,
+    //     originalImage,
+    //     stagedImage: isCompleted ? stagedImage : "",
+    //     userPrompt,
+    //     status,
+    //     requestId,
+    //     userId: session.user.id
+    //   }
+    // });
 
-    const room = await prisma.stagedRoom.create({
-      // roomType
-      // designStyle
-      // originalImage
-      // userPrompt
+    // return NextResponse.json({ roomId: room.id, stagedImage: room.stagedImage });
+
+    // NEW - check is completed ???
+    const isCompleted = stagedImage && stagedImage !== "";
+
+    if (!isCompleted) {
+      return NextResponse.json(
+        {
+          success: false,
+          status: "generating",
+          requestId,
+        },
+        { status: 202 }
+      );
+    }
+    // if completed then come this step
+    const result = await prisma.$transaction(async (tx) => {
+    // 1. Create Project
+    const project = await tx.project.create({
       data: {
-        roomType,
-        designStyle,
-        originalImage,
-        stagedImage: isCompleted ? stagedImage : "",
-        userPrompt,
-        status,
-        requestId,
-        userId: session.user.id
-      }
+        userId: session.user.id,
+        name: `${roomType || "Room"} Staging`,
+      },
     });
 
-    return NextResponse.json({ roomId: room.id, stagedImage: room.stagedImage });
+    // 2. Save original image
+    const originalAsset = await tx.asset.create({
+      data: {
+        projectId: project.id,
+        type: "ORIGINAL_IMAGE",
+        url: originalImage,
+        roomType,
+      },
+    });
+
+    // 3. Save staged image
+    const stagedAsset = await tx.asset.create({
+      data: {
+        projectId: project.id,
+        type: "GENERATED_IMAGE",
+        url: stagedImage,
+        roomType,
+        sourceAssetId: originalAsset.id,
+      },
+    });
+
+    // 4. Create completed generation job
+    const job = await tx.generationJob.create({
+      data: {
+        projectId: project.id,
+        type: "STAGING",
+        status: "COMPLETED",
+        requestId,
+        creditCost: cost,
+        prompt: userPrompt,
+        inputAssetId: originalAsset.id,
+        outputAssetId: stagedAsset.id,
+        creditsDeducted: !isUsingCustomKey,
+        completedAt: new Date(),
+      },
+    });
+
+    // 5. Deduct credits
+    let remainingCredits = null;
+
+    if (!isUsingCustomKey && cost > 0) {
+      const updatedUser = await tx.user.updateMany({
+        where: {
+          id: session.user.id,
+          credits: {
+            gte: cost,
+          },
+        },
+        data: {
+          credits: {
+            decrement: cost,
+          },
+        },
+      });
+
+      if (updatedUser.count === 0) {
+        throw new Error("Insufficient credits");
+      }
+
+      const user = await tx.user.findUnique({
+        where: { id: session.user.id },
+        select: { credits: true },
+      });
+
+      remainingCredits = user.credits;
+
+      // 6. Save credit transaction
+      await tx.creditTransaction.create({
+        data: {
+          userId: session.user.id,
+          amount: -cost,
+          type: "GENERATION",
+          description: "Room staging",
+          jobId: job.id,
+        },
+      });
+    }
+
+    return {
+      projectId: project.id,
+      jobId: job.id,
+      originalImage: originalAsset.url,
+      stagedImage: stagedAsset.url,
+      credits: remainingCredits,
+    };
+  });
+
+  return NextResponse.json({
+    success: true,
+    ...result,
+  });
+
   } catch (error) {
     console.error("[STAGE_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });

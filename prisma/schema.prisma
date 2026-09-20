@@ -168,6 +168,7 @@ model GenerationJob {
 
   requestId  String? @unique
   creditCost Int
+  creditsDeducted  Boolean  @default(false)
 
   prompt   String? @db.Text
   settings Json?

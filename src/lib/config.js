@@ -37,7 +37,7 @@ const config = {
   ai: {
     apiKey: process.env.MUAPIAPP_API_KEY,
     // stagging
-    stagingGenerationCost: 6, // 6 credits per AI staging layout generation
+    stagingGenerationCost: 12, // 12 credits per AI staging layout generation
     // decluttering
     declutteringGenerationCost: {
       "nano-banana-2-edit": {
