@@ -1,6 +1,6 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import GoogleProvider from "next-auth/providers/google"; // for goole auth
-import CredentialsProvider from "next-auth/providers/credentials"; // for MuAPI auth
+// import CredentialsProvider from "next-auth/providers/credentials"; // for MuAPI auth
 import { prisma } from "./prisma";
 
 // https://next-auth.js.org/providers/google

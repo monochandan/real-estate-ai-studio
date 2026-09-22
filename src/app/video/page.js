@@ -43,7 +43,7 @@ import {
 const MAX_IMAGES = 6;
 const MIN_IMAGES = 5;
 
-const VIDEO_COST = 10;
+const VIDEO_COST = 20;
 
 
 /*
@@ -198,14 +198,14 @@ export default function PropertyVideoPage() {
   */
 
   const [images, setImages] = useState([]);
-
-  const [logo, setLogo] = useState("");
-
+  const [logo, setLogo] = useState(null);
   const fileInputRef = useRef(null);
-
   const logoInputRef = useRef(null);
-
   const videoRef = useRef(null);
+
+
+  const [credits, setCredits] = useState(0);
+  const [loadingCredits, setLoadingCredits] = useState(true);
 
 
   /*
@@ -214,45 +214,19 @@ export default function PropertyVideoPage() {
   |--------------------------------------------------------------------------
   */
 
-  const [propertyType, setPropertyType] =
-    useState("villa");
-
-  const [bedrooms, setBedrooms] =
-    useState(3);
-
-  const [bathrooms, setBathrooms] =
-    useState(2);
-
-  const [livingRooms, setLivingRooms] =
-    useState(1);
-
-  const [otherRooms, setOtherRooms] =
-    useState([]);
-
-  const [location, setLocation] =
-    useState("");
-
-  const [address, setAddress] =
-    useState("");
-
-  const [price, setPrice] =
-    useState("");
-
-  const [area, setArea] =
-    useState("");
-
-  const [areaUnit, setAreaUnit] =
-    useState("m²");
-
-  const [phone, setPhone] =
-    useState("");
-
-  const [whatsapp, setWhatsapp] =
-    useState("");
-
-  const [agent, setAgent] =
-    useState("");
-
+  const [propertyType, setPropertyType] = useState("villa");
+  const [bedrooms, setBedrooms] = useState(3);
+  const [bathrooms, setBathrooms] = useState(2);
+  const [livingRooms, setLivingRooms] = useState(1);
+  const [otherRooms, setOtherRooms] = useState([]);
+  const [location, setLocation] = useState("");
+  const [address, setAddress] = useState("");
+  const [price, setPrice] = useState("");
+  const [area, setArea] = useState("");
+  const [areaUnit, setAreaUnit] = useState("m²");
+  const [phone, setPhone] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [agent, setAgent] = useState("");
   const [generatedVideoUrl, setGeneratedVideoUrl] = useState("");
 
 
@@ -271,11 +245,8 @@ export default function PropertyVideoPage() {
   |
   */
 
-  const [voiceLanguage, setVoiceLanguage] =
-    useState("en");
-
-  const [videoTextLanguage, setVideoTextLanguage] =
-    useState("en");
+  const [voiceLanguage, setVoiceLanguage] = useState("en");
+  const [videoTextLanguage, setVideoTextLanguage] = useState("en");
 
 
   /*
@@ -284,8 +255,7 @@ export default function PropertyVideoPage() {
   |--------------------------------------------------------------------------
   */
 
-  const [videoStyle, setVideoStyle] =
-    useState("modern");
+  const [videoStyle, setVideoStyle] = useState("modern");
 
 
   /*
@@ -294,29 +264,16 @@ export default function PropertyVideoPage() {
   |--------------------------------------------------------------------------
   */
 
-  const [selectedScene, setSelectedScene] =
-    useState(0);
-
-  const [isUploading, setIsUploading] =
-    useState(false);
-
-  const [uploadingLogo, setUploadingLogo] =
-    useState(false);
-
-  const [generationStatus, setGenerationStatus] =
-    useState("idle");
-
-  const [generationMessage, setGenerationMessage] =
-    useState("");
-
-  const [generationError, setGenerationError] =
-    useState("");
-
-  const [videoUrl, setVideoUrl] =
-    useState("");
-
-  const [isPlaying, setIsPlaying] =
-    useState(false);
+  const [selectedScene, setSelectedScene] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [generationStatus, setGenerationStatus] = useState("idle");
+  // Front end generation state
+  const [generationId, setGenerationId] = useState(null);
+  const [generationMessage, setGenerationMessage] = useState("");
+  const [generationError, setGenerationError] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [isPlaying, setIsPlaying] = useState(false);
 
   /*
   |--------------------------------------------------------------------------
@@ -327,55 +284,89 @@ export default function PropertyVideoPage() {
   |
   */
 
-  const [generatedVoiceText, setGeneratedVoiceText] =
-    useState("");
-
-  const [generatedVideoText, setGeneratedVideoText] =
-    useState(null);
+  const [generatedVoiceText, setGeneratedVoiceText] = useState("");
+  const [generatedVideoText, setGeneratedVideoText] = useState(null);
 
 
+  // credit check
+  useEffect(() => {
+
+      if (!session?.user?.id) {
+        return;
+      }
+
+      const loadCredits =
+        async () => {
+
+          try {
+
+            setLoadingCredits(true);
+
+            const response =
+              await fetch(
+                "/api/user/credits"
+              );
+
+            if (!response.ok) {
+              throw new Error(
+                "Could not load credits."
+              );
+            }
+
+            const data =
+              await response.json();
+
+            setCredits(
+              data.credits ?? 0
+            );
+
+          } catch (error) {
+
+            console.error(
+              "Credit loading failed:",
+              error
+            );
+
+          } finally {
+
+            setLoadingCredits(false);
+          }
+        };
+
+      loadCredits();
+
+    }, [session?.user?.id]);
   /*
   |--------------------------------------------------------------------------
   | IMAGE UPLOAD
   |--------------------------------------------------------------------------
   */
 
-  const uploadImage = async (file) => {
+  // NEW VERSION - Not using....
+  const uploadImage = async (event) => {
 
-    const formData = new FormData();
+  const file = event.target.files?.[0];
 
-    formData.append("file", file);
+  if (!file) return;
 
-    const response = await fetch(
-      "/api/upload",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+  if (!file.type.startsWith("image/")) {
+    alert("Please select an image file.");
+    return;
+  }
 
-    if (!response.ok) {
-      throw new Error(
-        "Image upload failed."
-      );
-    }
+  setLogo({
+    file,
+    name: file.name,
+    previewUrl: URL.createObjectURL(file),
+  });
 
-    const data =
-      await response.json();
-
-    if (!data.url) {
-      throw new Error(
-        "Upload API did not return an image URL."
-      );
-    }
-
-    return data.url;
+  if (logoInputRef.current) {
+    logoInputRef.current.value = "";
+  }
   };
 
 
-  const handleImageUpload = async (
-    event
-  ) => {
+  const handleImageUpload = async (event) => {
 
     const files =
       Array.from(
@@ -384,8 +375,7 @@ export default function PropertyVideoPage() {
 
     if (!files.length) return;
 
-    const remainingSlots =
-      MAX_IMAGES - images.length;
+    const remainingSlots = MAX_IMAGES - images.length;
 
     if (remainingSlots <= 0) {
 
@@ -396,38 +386,78 @@ export default function PropertyVideoPage() {
       return;
     }
 
-    const selectedFiles =
-      files.slice(
-        0,
-        remainingSlots
-      );
+    const selectedFiles = files.slice(0,remainingSlots);
 
     setIsUploading(true);
 
+    // OLD VERSION
+    // try {
+
+    //   const uploadedImages = [];
+
+    //   for (
+    //     const file of selectedFiles
+    //   ) {
+
+    //     const url =
+    //       await uploadImage(file);
+
+    //     uploadedImages.push({
+    //       id:
+    //         `${Date.now()}-${Math.random()}`,
+    //       url,
+    //       name:
+    //         file.name,
+    //     });
+    //   }
+
+    //   setImages(
+    //     (current) => [
+    //       ...current,
+    //       ...uploadedImages,
+    //     ]
+    //   );
+
+    // } catch (error) {
+
+    //   console.error(error);
+
+    //   alert(
+    //     error.message ||
+    //       "Could not upload images."
+    //   );
+
+    // } finally {
+
+    //   setIsUploading(false);
+
+    //   if (
+    //     fileInputRef.current
+    //   ) {
+    //     fileInputRef.current.value = "";
+    //   }
+    // }
+
+    // NEW VERSION
     try {
-
-      const uploadedImages = [];
-
-      for (
-        const file of selectedFiles
-      ) {
-
-        const url =
-          await uploadImage(file);
-
-        uploadedImages.push({
+      const newImages = selectedFiles.map((file) => ({
           id:
             `${Date.now()}-${Math.random()}`,
-          url,
+
+          file,
+
           name:
             file.name,
-        });
-      }
+
+          previewUrl:
+            URL.createObjectURL(file),
+        })
+      );
 
       setImages(
         (current) => [
           ...current,
-          ...uploadedImages,
+          ...newImages,
         ]
       );
 
@@ -437,7 +467,7 @@ export default function PropertyVideoPage() {
 
       alert(
         error.message ||
-          "Could not upload images."
+          "Could not add images."
       );
 
     } finally {
@@ -459,44 +489,78 @@ export default function PropertyVideoPage() {
   |--------------------------------------------------------------------------
   */
 
-  const handleLogoUpload = async (
-    event
-  ) => {
+  // OLD VERSION 
+  // const handleLogoUpload = async (event) => {
+  //   const file =
+  //     event.target.files?.[0];
 
-    const file =
-      event.target.files?.[0];
+  //   if (!file) return;
 
-    if (!file) return;
+  //   setUploadingLogo(true);
 
-    setUploadingLogo(true);
+  //   try {
 
-    try {
+  //     const url =
+  //       await uploadImage(file);
 
-      const url =
-        await uploadImage(file);
+  //     setLogo(url);
 
-      setLogo(url);
+  //   } catch (error) {
 
-    } catch (error) {
+  //     console.error(error);
 
-      console.error(error);
+  //     alert(
+  //       error.message ||
+  //         "Could not upload logo."
+  //     );
 
-      alert(
-        error.message ||
-          "Could not upload logo."
-      );
+  //   } finally {
 
-    } finally {
+  //     setUploadingLogo(false);
 
-      setUploadingLogo(false);
+  //     if (
+  //       logoInputRef.current
+  //     ) {
+  //       logoInputRef.current.value = "";
+  //     }
+  //   }
+  // };
 
-      if (
-        logoInputRef.current
-      ) {
-        logoInputRef.current.value = "";
+  // NEW VERSION
+  const handleLogoUpload = async (event) => {
+      const file =
+        event.target.files?.[0];
+
+      if (!file) return;
+
+      setUploadingLogo(true);
+
+      try {
+        const url =
+          await uploadImage(file);
+
+        setLogo(url);
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert(
+          error.message ||
+            "Could not upload logo."
+        );
+
+      } finally {
+
+        setUploadingLogo(false);
+
+        if (
+          logoInputRef.current
+        ) {
+          logoInputRef.current.value = "";
+        }
       }
-    }
-  };
+};
 
 
   /*
@@ -529,14 +593,11 @@ export default function PropertyVideoPage() {
         return current;
       }
 
-      const temp =
-        newImages[index];
+      const temp = newImages[index];
 
-      newImages[index] =
-        newImages[targetIndex];
+      newImages[index] = newImages[targetIndex];
 
-      newImages[targetIndex] =
-        temp;
+      newImages[targetIndex] = temp;
 
       return newImages;
     });
@@ -560,27 +621,58 @@ export default function PropertyVideoPage() {
     }
   };
 
+  // OLD VERSION
+  // const removeImage = (index) => {
 
+  //   setImages((current) =>
+  //     current.filter(
+  //       (_, i) => i !== index
+  //     )
+  //   );
+
+  //   setSelectedScene(
+  //     (current) =>
+  //       Math.min(
+  //         current,
+  //         Math.max(
+  //           0,
+  //           images.length - 2
+  //         )
+  //       )
+  //   );
+  // };
+
+  // NEW VERSION
   const removeImage = (index) => {
 
-    setImages((current) =>
-      current.filter(
-        (_, i) => i !== index
-      )
-    );
+      const imageToRemove =
+        images[index];
 
-    setSelectedScene(
-      (current) =>
-        Math.min(
-          current,
-          Math.max(
-            0,
-            images.length - 2
-          )
+      if (
+        imageToRemove?.previewUrl
+      ) {
+        URL.revokeObjectURL(
+          imageToRemove.previewUrl
+        );
+      }
+
+      setImages((current) =>
+        current.filter(
+          (_, i) => i !== index
         )
-    );
-  };
+      );
 
+      setSelectedScene(
+        (current) =>
+          Math.min(
+            current,
+            Math.max(
+              0,
+              images.length - 2
+            )
+          )
+      );
+};
 
   /*
   |--------------------------------------------------------------------------
@@ -687,45 +779,27 @@ export default function PropertyVideoPage() {
         );
       }
 
-      const blob =
-        await response.blob();
+      const blob = await response.blob();
 
-      const blobUrl =
-        URL.createObjectURL(
-          blob
-        );
+      const blobUrl = URL.createObjectURL(blob);
 
-      const link =
-        document.createElement(
-          "a"
-        );
+      const link =document.createElement("a");
 
-      link.href =
-        blobUrl;
+      link.href = blobUrl;
 
-      link.download =
-        "property-video.mp4";
+      link.download = "property-video.mp4";
 
-      document.body.appendChild(
-        link
-      );
+      document.body.appendChild(link);
 
       link.click();
 
-      document.body.removeChild(
-        link
-      );
+      document.body.removeChild(link);
 
-      URL.revokeObjectURL(
-        blobUrl
-      );
+      URL.revokeObjectURL(blobUrl);
 
     } catch (error) {
 
-      console.error(
-        "Download failed:",
-        error
-      );
+      console.error("Download failed:",error);
 
       /*
       |--------------------------------------------------------------------------
@@ -733,10 +807,7 @@ export default function PropertyVideoPage() {
       |--------------------------------------------------------------------------
       */
 
-      window.open(
-        videoUrl,
-        "_blank"
-      );
+      window.open(videoUrl,"_blank");
     }
   };
 
@@ -812,11 +883,11 @@ export default function PropertyVideoPage() {
 
         propertyTypeName,
 
-        location,
+        location: location || null,
 
-        address,
+        address: address || null,
 
-        price,
+        price: price || null,
 
         bedrooms:
           Number(bedrooms) || 0,
@@ -838,21 +909,26 @@ export default function PropertyVideoPage() {
               }
             : null,
 
-        otherRooms,
+        otherRooms: otherRooms.length ? otherRooms : [],
 
-        phone,
+        phone: phone || null,
 
-        whatsapp,
+        whatsapp: whatsapp || null,
 
-        agent,
+        agent: agent || null,
 
-        logo:
-          logo || null,
+        logo: logo
+        ? {
+            name: logo.name,
+          }
+        : null,
 
         images:
           images.map(
             (image) =>
-              image.url
+            ({
+              name: image.name,
+            })
           ),
       };
     };
@@ -875,10 +951,7 @@ export default function PropertyVideoPage() {
       }
 
 
-      if (
-        images.length <
-        MIN_IMAGES
-      ) {
+      if (images.length < MIN_IMAGES) {
 
         alert(
           `Please upload at least ${MIN_IMAGES} property images.`
@@ -887,47 +960,41 @@ export default function PropertyVideoPage() {
         return;
       }
 
-
-      const credits =
-        session.user.credits ?? 0;
-
-
-      if (
-        credits <
-        VIDEO_COST
-      ) {
-
+      // OLD VERSION
+      // const credits = session.user.credits ?? 0;
+      if (credits < VIDEO_COST) {
         alert(
           `You need at least ${VIDEO_COST} credits to generate a property video.`
         );
-
         return;
       }
 
+      // NEW VERSION --replaced previous block with API Based check.
+      const creditResponse = await fetch("/api/user/credits");
 
-      setGenerationStatus(
-        "generating"
-      );
+      if(!creditResponse.ok){
+        throw new Error("Could not check your credits.")
+      }
 
-      setGenerationMessage(
-        "Preparing your property video..."
-      );
+      const creditData = await creditResponse.json();
 
+      if((creditData.credits ?? 0) < VIDEO_COST){
+        throw new Error(
+          `You need at least ${VIDEO_COST} credits to generate a property video.`
+        );
+      }
+
+
+      setGenerationStatus("generating");
+      setGenerationMessage("Preparing your property video...");
       setGenerationError("");
-
       setVideoUrl("");
-
       setGeneratedVoiceText("");
-
-      setGeneratedVideoText(
-        null
-      );
-
+      setGeneratedVideoText(null);
 
       try {
 
-        const property =
-          buildPropertyObject();
+        const property = buildPropertyObject();
 
 
         /*
@@ -946,19 +1013,13 @@ export default function PropertyVideoPage() {
         |--------------------------------------------------------------------------
         */
 
-        const payload = {
-
-          property,
-
-
+        const payload = {property,
           /*
           |--------------------------------------------------------------------------
           | LANGUAGE SETTINGS
           |--------------------------------------------------------------------------
           */
-
           voiceLanguage,
-
           videoTextLanguage,
 
 
@@ -970,23 +1031,12 @@ export default function PropertyVideoPage() {
 
           video: {
 
-            style:
-              videoStyle,
-
-            format:
-              "9:16",
-
-            width:
-              1080,
-
-            height:
-              1920,
-
-            fps:
-              30,
-
-            duration:
-              30,
+            style:videoStyle,
+            format:"9:16",
+            width:1080,
+            height:1920,
+            fps:30,
+            duration:30,
           },
 
 
@@ -996,43 +1046,108 @@ export default function PropertyVideoPage() {
           |--------------------------------------------------------------------------
           */
 
-          generateVideoJson:
-            true,
-
-          generateVoiceText:
-            true,
-
-          generateVideoText:
-            true,
+          generateVideoJson:true,
+          generateVoiceText:true,
+          generateVideoText:true,
         };
 
-
-        console.log(
-          "Sending property video payload:",
-          payload
+        // new version
+        const formData = new FormData();
+        formData.append(
+          "property",
+          JSON.stringify(property)
         );
 
-
-        setGenerationMessage(
-          "AI is generating the voice-over and video text..."
+        formData.append(
+          "voiceLanguage",
+          voiceLanguage
         );
 
+        formData.append(
+          "videoTextLanguage",
+          videoTextLanguage
+        );
 
+        formData.append(
+          "video",
+          JSON.stringify({
+            style: videoStyle,
+            format: "9:16",
+            width: 1080,
+            height: 1920,
+            fps: 30,
+            duration: 30,
+          })
+        );
+
+        formData.append(
+          "generateVideoJson",
+          "true"
+        );
+
+        formData.append(
+          "generateVoiceText",
+          "true"
+        );
+
+        formData.append(
+          "generateVideoText",
+          "true"
+        );
+
+        images.forEach(
+          (image) => {
+            formData.append(
+              "images",
+              image.file,
+              image.name
+            );
+          }
+        );
+
+      if (logo?.file) {
+          formData.append(
+            "logo",
+            logo.file,
+            logo.name
+          );
+        }
+
+
+        //console.log( "Sending property video payload:",payload);
+        console.log("Sending property video request")
+        // setGenerationMessage( "AI is generating the voice-over and video text...");
+        setGenerationMessage("Sending your property images to the video render...");
+
+
+        // OLD FETCH
+        // const response =
+        //   await fetch(
+        //     "/api/videos/generation",
+        //     {
+        //       method: "POST",
+
+        //       headers: {
+        //         "Content-Type":
+        //           "application/json",
+        //       },
+
+        //       body:
+        //         JSON.stringify(
+        //           payload
+        //         ),
+        //     }
+        //   );
+
+        // NEW FETCH
         const response =
           await fetch(
             "/api/videos/generate",
             {
               method: "POST",
 
-              headers: {
-                "Content-Type":
-                  "application/json",
-              },
-
               body:
-                JSON.stringify(
-                  payload
-                ),
+                formData,
             }
           );
 
@@ -1049,8 +1164,7 @@ export default function PropertyVideoPage() {
         }
 
 
-        const data =
-          await response.json();
+        const data = await response.json();
 
 
         /*
@@ -1135,7 +1249,7 @@ export default function PropertyVideoPage() {
         */
 
         if (
-          data.videoId
+          data.jobId
         ) {
 
           setGenerationMessage(
@@ -1143,7 +1257,7 @@ export default function PropertyVideoPage() {
           );
 
           await pollVideoStatus(
-            data.videoId
+            data.jobId
           );
 
           return;
@@ -1177,33 +1291,19 @@ export default function PropertyVideoPage() {
   */
 
   const pollVideoStatus =
-    async (videoId) => {
+    async (jobId) => {
 
-      const maxAttempts =
-        180;
+      const maxAttempts = 180;
 
 
-      for (
-        let attempt = 0;
-        attempt <
-        maxAttempts;
-        attempt++
-      ) {
+      for (let attempt = 0;attempt <maxAttempts;attempt++) {
 
         const response =
-          await fetch(
-            `/api/videos?id=${encodeURIComponent(
-              videoId
-            )}`
-          );
+          await fetch(`/api/videos?id=${encodeURIComponent(jobId)}`);
 
+        if (response.ok) {
 
-        if (
-          response.ok
-        ) {
-
-          const data =
-            await response.json();
+          const data = await response.json();
 
 
           /*
@@ -1212,23 +1312,13 @@ export default function PropertyVideoPage() {
           |--------------------------------------------------------------------------
           */
 
-          if (
-            data.voiceoverText
-          ) {
-
-            setGeneratedVoiceText(
-              data.voiceoverText
-            );
+          if (data.voiceoverText) {
+            setGeneratedVoiceText(data.voiceoverText);
           }
 
 
-          if (
-            data.videoText
-          ) {
-
-            setGeneratedVideoText(
-              data.videoText
-            );
+          if (data.videoText) {
+            setGeneratedVideoText(data.videoText);
           }
 
 
@@ -1238,24 +1328,11 @@ export default function PropertyVideoPage() {
           |--------------------------------------------------------------------------
           */
 
-          if (
-            data.status ===
-              "completed" &&
-            data.videoUrl
-          ) {
-
-            setVideoUrl(
-              data.videoUrl
-            );
-
-            setGenerationStatus(
-              "success"
-            );
-
-            setGenerationMessage(
-              "Your property video is ready."
-            );
-
+          if (data.status === "completed" && data.videoUrl) {
+            setVideoUrl(data.videoUrl);
+            window.dispatchEvent(new Event("credits-updated"));
+            setGenerationStatus("success");
+            setGenerationMessage("Your property video is ready.");
             return;
           }
 
@@ -1266,15 +1343,8 @@ export default function PropertyVideoPage() {
           |--------------------------------------------------------------------------
           */
 
-          if (
-            data.status ===
-            "failed"
-          ) {
-
-            throw new Error(
-              data.error ||
-                "Video rendering failed."
-            );
+          if (data.status ==="failed") {
+              throw new Error(data.error || "Video rendering failed.");
           }
 
 
@@ -1284,14 +1354,8 @@ export default function PropertyVideoPage() {
           |--------------------------------------------------------------------------
           */
 
-          if (
-            data.status ===
-            "processing"
-          ) {
-
-            setGenerationMessage(
-              "Rendering your property video..."
-            );
+          if (data.status ==="processing") {
+              setGenerationMessage("Rendering your property video...");
           }
         }
 
@@ -1306,9 +1370,7 @@ export default function PropertyVideoPage() {
       }
 
 
-      throw new Error(
-        "Video generation timed out."
-      );
+      throw new Error("Video generation timed out.");
     };
 
 
@@ -1872,7 +1934,7 @@ export default function PropertyVideoPage() {
                 >
 
                   <img
-                    src={logo}
+                    src={logo.previewUrl}
                     alt="Agency logo"
                     className="
                       max-h-14
@@ -1884,9 +1946,13 @@ export default function PropertyVideoPage() {
 
                   <button
                     type="button"
-                    onClick={() =>
-                      setLogo("")
-                    }
+                    onClick={() => {
+                      if (logo?.previewUrl) {
+                        URL.revokeObjectURL(logo.previewUrl);
+                      }
+
+                      setLogo(null);
+                    }}
                     className="
                       absolute
                       top-2
@@ -3830,7 +3896,7 @@ export default function PropertyVideoPage() {
                               images.length -
                                 1
                             )
-                          ]?.url
+                          ]?.previewUrl
                         }
                         alt="Property preview"
                         className="
@@ -4621,7 +4687,7 @@ export default function PropertyVideoPage() {
 
                         <img
                           src={
-                            image.url
+                            image.previewUrl
                           }
                           alt={`Scene ${
                             index + 1

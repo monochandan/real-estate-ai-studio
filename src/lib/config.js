@@ -39,6 +39,7 @@ const config = {
     // stagging
     stagingGenerationCost: 12, // 12 credits per AI staging layout generation
     // decluttering
+    videoGenerationCost: 20,
     declutteringGenerationCost: {
       "nano-banana-2-edit": {
         "1k": 12,
