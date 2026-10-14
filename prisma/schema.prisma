@@ -150,6 +150,8 @@ model Asset {
   inputJobs  GenerationJob[] @relation("JobInputAsset")
   outputJobs GenerationJob[] @relation("JobOutputAsset")
 
+  jobInputs GenerationJobInput[]
+
   createdAt DateTime @default(now())
 }
 
@@ -157,6 +159,19 @@ enum AssetType {
   ORIGINAL_IMAGE
   GENERATED_IMAGE
   VIDEO
+}
+
+model GenerationJobInput {
+  id        String @id @default(cuid())
+  jobId     String
+  assetId   String
+  sortOrder Int    @default(0)
+
+  job   GenerationJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  asset Asset         @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, assetId])
+  @@index([jobId])
 }
 
 model GenerationJob {
@@ -176,10 +191,14 @@ model GenerationJob {
   inputAssetId  String?
   outputAssetId String?
 
+  errorMessage      String?  @db.Text
+
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   inputAsset  Asset? @relation("JobInputAsset", fields: [inputAssetId], references: [id])
   outputAsset Asset? @relation("JobOutputAsset", fields: [outputAssetId], references: [id])
+
+  inputAssets  GenerationJobInput[]
 
   creditTransactions CreditTransaction[]
 
