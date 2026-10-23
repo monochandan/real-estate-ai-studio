@@ -5,7 +5,8 @@ import { useSession, signOut, signIn } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { IoClose, IoMenu } from "react-icons/io5";
-import { FiMoon, FiSun, FiLogOut, FiDollarSign, FiPlus, FiUser, FiKey, FiCheck, FiX, FiTrash2 } from "react-icons/fi";
+import { FiMoon, FiSun, FiLogOut, FiDollarSign, FiPlus, FiUser, FiKey, FiCheck, FiX, FiTrash2} from "react-icons/fi";
+import { FaCoins } from "react-icons/fa";
 import { SiVercel } from "react-icons/si";
 import config from "@/lib/config";
 import toast from "react-hot-toast";
@@ -39,6 +40,8 @@ export default function Navbar() {
   // }, [session?.user?.customApiKey]);
 
   // Fetch the current credit balance from the database
+  // console.log("User session:", session?.user);
+
   useEffect(() => {
     const fetchCredits = async () => {
       // Logged-out users always have 0 credits
@@ -286,13 +289,32 @@ export default function Navbar() {
                       <FiKey size={14} className="text-amber-400" />
                       <span>{isApiKeyActive ? "Manage API Key" : "Add API Key"}</span>
                     </button> */}
-                    <button
+                    
+                    {/* --------------------------------------------------------- */}
+                    {/* <button
                       onClick={() => signOut({ callbackUrl: "/login" })}
                       className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-xs font-semibold text-red-500 hover:bg-red-500/10 transition-colors"
                     >
                       <FiLogOut size={14} />
                       <span>Sign Out</span>
-                    </button>
+                    </button> */}
+
+                    {/* ------------------------------------------------------------ */}
+
+                    {/* REPLACED WITH ABOVE <button></button> (293 - 302) because signout is not working*/}
+                      <button
+                        onClick={async () => {
+                          setIsProfileOpen(false);
+                          await signOut({
+                            redirect: true,
+                            callbackUrl: "/login",
+                          });
+                        }}
+                        className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-xs font-semibold text-red-500 hover:bg-red-500/10 transition-colors"
+                      >
+                        <FiLogOut size={14} />
+                        <span>Sign Out</span>
+                      </button>
                   </div>
                 )}
               </div>
@@ -347,7 +369,9 @@ export default function Navbar() {
                 href={link.path}
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center py-2.5 rounded text-sm font-semibold transition-all ${
-                  pathname === link.path ? "bg-primary/10 text-primary px-3 border border-primary/20" : "text-primary-text hover:bg-bg-card"
+                  pathname === link.path 
+                  ? "bg-primary/10 text-primary px-3 border border-primary/20" 
+                  : "text-primary-text hover:bg-bg-card"
                 }`}
               >
                 {link.name}
@@ -355,17 +379,25 @@ export default function Navbar() {
             ))}
 
             {/* <button
-              onClick={() => {
+              // onClick={() => {
+              //   setIsOpen(false);
+              //   setIsApiKeyModalOpen(true);
+              // }}
+              // Chainging the onclick to signout and redirect to login page because signout is not working in mobile menu
+              onClick={async () => {
                 setIsOpen(false);
-                setIsApiKeyModalOpen(true);
+                await signOut({
+                  callbackUrl: "/login",
+                  redirect: true,
+                });
               }}
               className="flex w-full items-center justify-between rounded border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-xs font-bold text-amber-400"
             >
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <FiKey />
                 <span>{isApiKeyActive ? "Manage Custom API Key" : "Add API Key"}</span>
-              </div>
-            </button> */}
+              </div> */}
+            {/* </button> */}
 
             <div className="h-px bg-divider/50 my-2" />
 

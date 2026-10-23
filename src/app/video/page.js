@@ -3,34 +3,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
-import {
-  FaUpload,
-  FaSpinner,
-  FaMagic,
-  FaDownload,
-  FaShareAlt,
-  FaHome,
-  FaImages,
-  FaChevronUp,
-  FaChevronDown,
-  FaTimes,
-  FaCheck,
-  FaPlay,
-  FaPause,
-  FaRedo,
-  FaCoins,
-  FaFilm,
-  FaMapMarkerAlt,
-  FaEuroSign,
-  FaBed,
-  FaBath,
-  FaCouch,
-  FaWhatsapp,
-  FaPhone,
-  FaRulerCombined,
-  FaVolumeUp,
-  FaGlobeEurope,
-  FaExclamationTriangle,
+import {FaUpload,FaSpinner,FaMagic,FaDownload,FaShareAlt,FaHome,FaImages,
+  FaChevronUp,FaChevronDown,FaTimes,FaCheck,FaPlay,FaPause,FaRedo,FaCoins,FaFilm,
+  FaEuroSign,FaBed,FaBath,FaCouch,FaWhatsapp,FaPhone,FaRulerCombined,FaVolumeUp,
+  FaExclamationTriangle,FaGlobeEurope
 } from "react-icons/fa";
 
 
@@ -42,13 +18,12 @@ import {
 
 const MAX_IMAGES = 6;
 const MIN_IMAGES = 5;
-
 const VIDEO_COST = 20;
 
 
 /*
 |--------------------------------------------------------------------------
-| PROPERTY TYPES
+| PROPERTY TYPES: 3
 |--------------------------------------------------------------------------
 */
 
@@ -64,7 +39,7 @@ const PROPERTY_TYPES = [
 
 /*
 |--------------------------------------------------------------------------
-| OTHER ROOMS
+| OTHER ROOMS: 6
 |--------------------------------------------------------------------------
 */
 
@@ -82,7 +57,7 @@ const OTHER_ROOMS = [
 
 /*
 |--------------------------------------------------------------------------
-| AREA UNITS
+| AREA UNITS: 5
 |--------------------------------------------------------------------------
 */
 
@@ -96,7 +71,7 @@ const AREA_UNITS = [
 
 /*
 |--------------------------------------------------------------------------
-| VIDEO STYLES
+| VIDEO STYLES: 14
 |--------------------------------------------------------------------------
 */
 
