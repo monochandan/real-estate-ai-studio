@@ -6,7 +6,7 @@ import { useSession, signIn } from "next-auth/react";
 import {FaUpload,FaSpinner,FaMagic,FaDownload,FaShareAlt,FaHome,FaImages,
   FaChevronUp,FaChevronDown,FaTimes,FaCheck,FaPlay,FaPause,FaRedo,FaCoins,FaFilm,
   FaEuroSign,FaBed,FaBath,FaCouch,FaWhatsapp,FaPhone,FaRulerCombined,FaVolumeUp,
-  FaExclamationTriangle,FaGlobeEurope
+  FaExclamationTriangle,FaGlobeEurope, FaMapMarkerAlt
 } from "react-icons/fa";
 
 
@@ -1371,15 +1371,7 @@ export default function PropertyVideoPage() {
   return (
 
     <div
-      className="
-        flex-1
-        flex
-        flex-col
-        md:flex-row
-        bg-slate-50
-        min-h-screen
-        overflow-y-auto
-      "
+      className="flex-1 flex flex-col md:flex-row bg-slate-50 min-h-screen overflow-y-auto"
     >
 
 
@@ -1388,17 +1380,7 @@ export default function PropertyVideoPage() {
       ================================================================ */}
 
       <div
-        className="
-          w-full
-          md:w-[400px]
-          border-r
-          border-slate-200
-          bg-white
-          flex
-          flex-col
-          flex-shrink-0
-          min-h-0
-        "
+        className="w-full md:w-[400px] border-r border-slate-200 bg-white flex flex-col flex-shrink-0 min-h-0"
       >
 
 
@@ -1407,13 +1389,7 @@ export default function PropertyVideoPage() {
         ============================================================== */}
 
         <div
-          className="
-            px-5
-            py-4
-            border-b
-            border-slate-100
-            flex-shrink-0
-          "
+          className="px-5 py-4 border-b border-slate-100 flex-shrink-0"
         >
 
           <h1

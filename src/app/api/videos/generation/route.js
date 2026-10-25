@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../lib/auth";
 import config from "../../../lib/config";
 import { prisma } from "../../../lib/prisma";
-
+import { sendJobToPython } from "../../../lib/pythonWorker";
 export const runtime = "nodejs";
 
 export async function POST(request) {
