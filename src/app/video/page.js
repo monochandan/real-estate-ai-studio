@@ -948,6 +948,7 @@ export default function PropertyVideoPage() {
           throw new Error(errorText || "Video generation failed.");
         }
         const data = await response.json();
+        window.dispatchEvent(new Event("credits-updated"));
 
 
         /*
@@ -1059,7 +1060,6 @@ export default function PropertyVideoPage() {
 
         setVideoUrl(completedVideoUrl);
         setGeneratedVideoUrl(completedVideoUrl);
-        window.dispatchEvent(new Event("credits-updated"));
         setGenerationStatus("success");
         setGenerationMessage("Your property video is ready.");
         return;
@@ -1068,6 +1068,7 @@ export default function PropertyVideoPage() {
 
       // Video rendering failed.
       if (data.status === "failed") {
+        window.dispatchEvent(new Event("credits-updated"));
         throw new Error(
           data.error || "Video rendering failed."
         );
@@ -3625,7 +3626,7 @@ export default function PropertyVideoPage() {
                       {logo && (
 
                         <img
-                          src={logo}
+                          src={logo.previewUrl}
                           alt="Agency logo"
                           className="
                             absolute
@@ -3752,7 +3753,7 @@ export default function PropertyVideoPage() {
                             "
                           >
 
-                            â€¢
+                            •
 
                           </span>
 
@@ -4447,4 +4448,3 @@ export default function PropertyVideoPage() {
     </div>
   );
 }
-

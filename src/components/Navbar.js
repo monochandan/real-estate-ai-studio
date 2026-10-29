@@ -53,7 +53,9 @@ export default function Navbar() {
       try {
         setLoadingCredits(true);
 
-        const res = await fetch("/api/user/credits");
+        const res = await fetch("/api/user/credits", {
+          cache: "no-store",
+        });
 
         if (!res.ok) {
           throw new Error("Failed to fetch credits");

@@ -9,6 +9,9 @@ import numpy as np
 import requests
 from PIL import Image, ImageDraw, ImageFont
 
+import subprocess
+import imageio_ffmpeg
+
 
 WIDTH = 1080
 HEIGHT = 1920
@@ -245,24 +248,76 @@ def render_property_video(job: dict, output_path: str) -> str:
                 image.load()
                 prepared_images.append(_cover_resize(image))
 
-        writer = cv2.VideoWriter(
-            str(output),
-            cv2.VideoWriter_fourcc(*"mp4v"),
-            FPS,
-            (WIDTH, HEIGHT),
-        )
+        # writer = cv2.VideoWriter(
+        #     str(output),
+        #     cv2.VideoWriter_fourcc(*"mp4v"),
+        #     FPS,
+        #     (WIDTH, HEIGHT),
+        # )
 
-        if not writer.isOpened():
-            raise RuntimeError("Could not initialize the MP4 video writer.")
+        # if not writer.isOpened():
+        #     raise RuntimeError("Could not initialize the MP4 video writer.")
+
+        # try:
+        #     for image in prepared_images:
+        #         for frame_index in range(FPS * SECONDS_PER_IMAGE):
+        #             progress = frame_index / max(1, FPS * SECONDS_PER_IMAGE - 1)
+        #             frame = _make_frame(image, progress, property_data, style)
+        #             writer.write(frame)
+        # finally:
+        #     writer.release()
+        ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+
+        command = [
+            ffmpeg_exe,
+            "-y",
+            "-f", "rawvideo",
+            "-vcodec", "rawvideo",
+            "-pix_fmt", "bgr24",
+            "-s", f"{WIDTH}x{HEIGHT}",
+            "-r", str(FPS),
+            "-i", "-",
+            "-an",
+            "-c:v", "libx264",
+            "-preset", "veryfast",
+            "-crf", "23",
+            "-pix_fmt", "yuv420p",
+            "-movflags", "+faststart",
+            str(output),
+        ]
+
+        process = subprocess.Popen(
+            command,
+            stdin=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
 
         try:
             for image in prepared_images:
                 for frame_index in range(FPS * SECONDS_PER_IMAGE):
-                    progress = frame_index / max(1, FPS * SECONDS_PER_IMAGE - 1)
-                    frame = _make_frame(image, progress, property_data, style)
-                    writer.write(frame)
+                    progress = frame_index / max(
+                        1, FPS * SECONDS_PER_IMAGE - 1
+                    )
+
+                    frame = _make_frame(
+                        image,
+                        progress,
+                        property_data,
+                        style,
+                    )
+
+                    process.stdin.write(frame.tobytes())
+
         finally:
-            writer.release()
+            if process.stdin:
+                process.stdin.close()
+
+        return_code = process.wait()
+
+        if return_code != 0:
+            raise RuntimeError(
+                f"FFmpeg video encoding failed with code {return_code}."
+            )
 
     if not output.exists() or output.stat().st_size == 0:
         raise RuntimeError("Video rendering failed to produce an MP4 file.")
