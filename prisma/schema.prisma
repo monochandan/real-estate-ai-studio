@@ -106,7 +106,7 @@ model User {
   emailVerified DateTime?
   image         String?
 
-  credits Int @default(10)
+  credits Int @default(100)
 
   accounts           Account[]
   sessions           Session[]
@@ -136,6 +136,7 @@ model Asset {
 
   type AssetType
   url  String    @db.Text
+  storagePath String?    @db.Text
 
   // Useful for images
   roomType String?
@@ -184,6 +185,7 @@ model GenerationJob {
   requestId  String? @unique
   creditCost Int
   creditsDeducted  Boolean  @default(false)
+  creditsRefunded Boolean @default(false)
 
   prompt   String? @db.Text
   settings Json?

@@ -1,4 +1,4 @@
-
+﻿
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -102,7 +102,6 @@ const VIDEO_STYLES = [
   },
 ];
 
-
 /*
 |--------------------------------------------------------------------------
 | TRANSLATIONS
@@ -198,7 +197,7 @@ export default function PropertyVideoPage() {
   const [address, setAddress] = useState("");
   const [price, setPrice] = useState("");
   const [area, setArea] = useState("");
-  const [areaUnit, setAreaUnit] = useState("m²");
+  const [areaUnit, setAreaUnit] = useState("m\u00B2");
   const [phone, setPhone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [agent, setAgent] = useState("");
@@ -317,29 +316,22 @@ export default function PropertyVideoPage() {
   |--------------------------------------------------------------------------
   */
 
-  // NEW VERSION - Not using....
-  const uploadImage = async (event) => {
 
-  const file = event.target.files?.[0];
 
-  if (!file) return;
+  // Handle a logo File directly (not a browser event) - removed 320-341
+  const uploadImage = async (file) => {
+    if (!file) return;
 
-  if (!file.type.startsWith("image/")) {
-    alert("Please select an image file.");
-    return;
-  }
+    if (!file.type.startsWith("image/")) {
+      throw new Error("Please select an image file.");
+    }
 
-  setLogo({
-    file,
-    name: file.name,
-    previewUrl: URL.createObjectURL(file),
-  });
-
-  if (logoInputRef.current) {
-    logoInputRef.current.value = "";
-  }
+    setLogo({
+      file,
+      name: file.name,
+      previewUrl: URL.createObjectURL(file),
+    });
   };
-
 
   const handleImageUpload = async (event) => {
 
@@ -365,53 +357,7 @@ export default function PropertyVideoPage() {
 
     setIsUploading(true);
 
-    // OLD VERSION
-    // try {
 
-    //   const uploadedImages = [];
-
-    //   for (
-    //     const file of selectedFiles
-    //   ) {
-
-    //     const url =
-    //       await uploadImage(file);
-
-    //     uploadedImages.push({
-    //       id:
-    //         `${Date.now()}-${Math.random()}`,
-    //       url,
-    //       name:
-    //         file.name,
-    //     });
-    //   }
-
-    //   setImages(
-    //     (current) => [
-    //       ...current,
-    //       ...uploadedImages,
-    //     ]
-    //   );
-
-    // } catch (error) {
-
-    //   console.error(error);
-
-    //   alert(
-    //     error.message ||
-    //       "Could not upload images."
-    //   );
-
-    // } finally {
-
-    //   setIsUploading(false);
-
-    //   if (
-    //     fileInputRef.current
-    //   ) {
-    //     fileInputRef.current.value = "";
-    //   }
-    // }
 
     // NEW VERSION
     try {
@@ -464,78 +410,31 @@ export default function PropertyVideoPage() {
   |--------------------------------------------------------------------------
   */
 
-  // OLD VERSION 
-  // const handleLogoUpload = async (event) => {
-  //   const file =
-  //     event.target.files?.[0];
 
-  //   if (!file) return;
-
-  //   setUploadingLogo(true);
-
-  //   try {
-
-  //     const url =
-  //       await uploadImage(file);
-
-  //     setLogo(url);
-
-  //   } catch (error) {
-
-  //     console.error(error);
-
-  //     alert(
-  //       error.message ||
-  //         "Could not upload logo."
-  //     );
-
-  //   } finally {
-
-  //     setUploadingLogo(false);
-
-  //     if (
-  //       logoInputRef.current
-  //     ) {
-  //       logoInputRef.current.value = "";
-  //     }
-  //   }
-  // };
-
-  // NEW VERSION
+  // new version handle logo upload- removed 519-550
   const handleLogoUpload = async (event) => {
-      const file =
-        event.target.files?.[0];
+    const file = event.target.files?.[0];
 
-      if (!file) return;
+    if (!file) return;
 
-      setUploadingLogo(true);
+    setUploadingLogo(true);
 
-      try {
-        const url =
-          await uploadImage(file);
+    try {
+      await uploadImage(file);
+    } catch (error) {
+      console.error("Logo upload failed:", error);
 
-        setLogo(url);
+      alert(
+        error.message || "Could not upload logo."
+      );
+    } finally {
+      setUploadingLogo(false);
 
-      } catch (error) {
-
-        console.error(error);
-
-        alert(
-          error.message ||
-            "Could not upload logo."
-        );
-
-      } finally {
-
-        setUploadingLogo(false);
-
-        if (
-          logoInputRef.current
-        ) {
-          logoInputRef.current.value = "";
-        }
+      if (logoInputRef.current) {
+        logoInputRef.current.value = "";
       }
-};
+    }
+  };
 
 
   /*
@@ -596,26 +495,6 @@ export default function PropertyVideoPage() {
     }
   };
 
-  // OLD VERSION
-  // const removeImage = (index) => {
-
-  //   setImages((current) =>
-  //     current.filter(
-  //       (_, i) => i !== index
-  //     )
-  //   );
-
-  //   setSelectedScene(
-  //     (current) =>
-  //       Math.min(
-  //         current,
-  //         Math.max(
-  //           0,
-  //           images.length - 2
-  //         )
-  //       )
-  //   );
-  // };
 
   // NEW VERSION
   const removeImage = (index) => {
@@ -915,60 +794,48 @@ export default function PropertyVideoPage() {
   |--------------------------------------------------------------------------
   */
 
-  const handleGenerateVideo =
-    async () => {
-
+  const handleGenerateVideo = async () => {
       if (!session?.user) {
-
         signIn("google");
-
         return;
       }
 
-
       if (images.length < MIN_IMAGES) {
 
-        alert(
-          `Please upload at least ${MIN_IMAGES} property images.`
-        );
-
+        alert(`Please upload at least ${MIN_IMAGES} property images.`);
         return;
       }
 
       // OLD VERSION
       // const credits = session.user.credits ?? 0;
-      if (credits < VIDEO_COST) {
-        alert(
-          `You need at least ${VIDEO_COST} credits to generate a property video.`
-        );
-        return;
-      }
+      try{
 
-      // NEW VERSION --replaced previous block with API Based check.
-      const creditResponse = await fetch("/api/user/credits");
+          // NEW VERSION --replaced previous block with API Based check.
+        const creditResponse = await fetch("/api/user/credits");
 
-      if(!creditResponse.ok){
-        throw new Error("Could not check your credits.")
-      }
+        if(!creditResponse.ok){
+          throw new Error("Could not check your credits.")
+        }
 
-      const creditData = await creditResponse.json();
-
-      if((creditData.credits ?? 0) < VIDEO_COST){
-        throw new Error(
-          `You need at least ${VIDEO_COST} credits to generate a property video.`
-        );
-      }
+        const creditData = await creditResponse.json();
+        const availableCredits = creditData.credits ?? 0;
 
 
-      setGenerationStatus("generating");
-      setGenerationMessage("Preparing your property video...");
-      setGenerationError("");
-      setVideoUrl("");
-      setGeneratedVoiceText("");
-      setGeneratedVideoText(null);
+        if (availableCredits < VIDEO_COST) {
+          alert(`You need at least ${VIDEO_COST} credits to generate a property video.`);
+          return;
+        }
 
-      try {
 
+        setGenerationStatus("generating");
+        setGenerationMessage("Preparing your property video...");
+        setGenerationError("");
+        setVideoUrl("");
+        setGeneratedVoiceText("");
+        setGeneratedVideoText(null);
+
+
+        // all property details selected by user, get as object here
         const property = buildPropertyObject();
 
 
@@ -988,87 +855,63 @@ export default function PropertyVideoPage() {
         |--------------------------------------------------------------------------
         */
 
-        const payload = {property,
-          /*
-          |--------------------------------------------------------------------------
-          | LANGUAGE SETTINGS
-          |--------------------------------------------------------------------------
-          */
-          voiceLanguage,
-          videoTextLanguage,
+        // const payload = {property,
+        //   /*
+        //   |--------------------------------------------------------------------------
+        //   | LANGUAGE SETTINGS
+        //   |--------------------------------------------------------------------------
+        //   */
+        //   voiceLanguage,
+        //   videoTextLanguage,
 
 
-          /*
-          |--------------------------------------------------------------------------
-          | VIDEO SETTINGS
-          |--------------------------------------------------------------------------
-          */
+        //   /*
+        //   |--------------------------------------------------------------------------
+        //   | VIDEO SETTINGS
+        //   |--------------------------------------------------------------------------
+        //   */
 
-          video: {
+        //   video: {
 
-            style:videoStyle,
-            format:"9:16",
-            width:1080,
-            height:1920,
-            fps:30,
-            duration:30,
-          },
+        //     style:videoStyle,
+        //     format:"9:16",
+        //     width:1080,
+        //     height:1920,
+        //     fps:30,
+        //     duration:30,
+        //   },
 
 
-          /*
-          |--------------------------------------------------------------------------
-          | LLM GENERATION FLAG
-          |--------------------------------------------------------------------------
-          */
+        //   /*
+        //   |--------------------------------------------------------------------------
+        //   | LLM GENERATION FLAG
+        //   |--------------------------------------------------------------------------
+        //   */
 
-          generateVideoJson:true,
-          generateVoiceText:true,
-          generateVideoText:true,
-        };
+        //   generateVideoJson:true,
+        //   generateVoiceText:true,
+        //   generateVideoText:true,
+        // };
 
         // new version
+        // everything are enetered into the form data to send to the backend api
         const formData = new FormData();
-        formData.append(
-          "property",
-          JSON.stringify(property)
+        formData.append("property",JSON.stringify(property));
+        formData.append("voiceLanguage", voiceLanguage);
+        formData.append("videoTextLanguage",videoTextLanguage);
+        formData.append("video",JSON.stringify({
+                                          style: videoStyle,
+                                          format: "9:16",
+                                          width: 1080,
+                                          height: 1920,
+                                          fps: 30,
+                                          duration: 30,
+                                        })
         );
 
-        formData.append(
-          "voiceLanguage",
-          voiceLanguage
-        );
-
-        formData.append(
-          "videoTextLanguage",
-          videoTextLanguage
-        );
-
-        formData.append(
-          "video",
-          JSON.stringify({
-            style: videoStyle,
-            format: "9:16",
-            width: 1080,
-            height: 1920,
-            fps: 30,
-            duration: 30,
-          })
-        );
-
-        formData.append(
-          "generateVideoJson",
-          "true"
-        );
-
-        formData.append(
-          "generateVoiceText",
-          "true"
-        );
-
-        formData.append(
-          "generateVideoText",
-          "true"
-        );
+        formData.append("generateVideoJson","true");
+        formData.append("generateVoiceText","true");
+        formData.append("generateVideoText","true");
 
         images.forEach(
           (image) => {
@@ -1080,65 +923,30 @@ export default function PropertyVideoPage() {
           }
         );
 
-      if (logo?.file) {
-          formData.append(
-            "logo",
-            logo.file,
-            logo.name
-          );
-        }
+        if (logo?.file) {
+            formData.append(
+              "logo",
+              logo.file,
+              logo.name
+            );
+          }
 
 
-        //console.log( "Sending property video payload:",payload);
+        // console.log( "Sending property video payload:",payload);
         console.log("Sending property video request")
         // setGenerationMessage( "AI is generating the voice-over and video text...");
         setGenerationMessage("Sending your property images to the video render...");
 
-
-        // OLD FETCH
-        // const response =
-        //   await fetch(
-        //     "/api/videos/generation",
-        //     {
-        //       method: "POST",
-
-        //       headers: {
-        //         "Content-Type":
-        //           "application/json",
-        //       },
-
-        //       body:
-        //         JSON.stringify(
-        //           payload
-        //         ),
-        //     }
-        //   );
-
         // NEW FETCH
-        const response =
-          await fetch(
-            "/api/videos/generate",
-            {
+        const response = await fetch("/api/videos/generation", {
               method: "POST",
-
-              body:
-                formData,
+              body: formData,
             }
           );
-
-
         if (!response.ok) {
-
-          const errorText =
-            await response.text();
-
-          throw new Error(
-            errorText ||
-              "Video generation failed."
-          );
+          const errorText = await response.text();
+          throw new Error(errorText || "Video generation failed.");
         }
-
-
         const data = await response.json();
 
 
@@ -1151,44 +959,10 @@ export default function PropertyVideoPage() {
         |
         */
 
-        if (
-          data.voiceoverText
-        ) {
-
-          setGeneratedVoiceText(
-            data.voiceoverText
-          );
-        }
-
-
-        if (
-          data.videoText
-        ) {
-
-          setGeneratedVideoText(
-            data.videoText
-          );
-        }
-
-
-        if (
-          data.generated?.voiceover
-        ) {
-
-          setGeneratedVoiceText(
-            data.generated.voiceover
-          );
-        }
-
-
-        if (
-          data.generated?.videoText
-        ) {
-
-          setGeneratedVideoText(
-            data.generated.videoText
-          );
-        }
+        if (data.voiceoverText) {setGeneratedVoiceText(data.voiceoverText);}
+        if (data.videoText) {setGeneratedVideoText(data.videoText);}
+        if (data.generated?.voiceover) {setGeneratedVoiceText(data.generated.voiceover);}
+        if (data.generated?.videoText) {setGeneratedVideoText(data.generated.videoText);}
 
 
         /*
@@ -1197,22 +971,10 @@ export default function PropertyVideoPage() {
         |--------------------------------------------------------------------------
         */
 
-        if (
-          data.videoUrl
-        ) {
-
-          setVideoUrl(
-            data.videoUrl
-          );
-
-          setGenerationStatus(
-            "success"
-          );
-
-          setGenerationMessage(
-            "Your property video is ready."
-          );
-
+        if (data.videoUrl){
+          setVideoUrl(data.videoUrl);
+          setGenerationStatus("success");
+          setGenerationMessage("Your property video is ready.");
           return;
         }
 
@@ -1223,18 +985,9 @@ export default function PropertyVideoPage() {
         |--------------------------------------------------------------------------
         */
 
-        if (
-          data.jobId
-        ) {
-
-          setGenerationMessage(
-            "Rendering your property video..."
-          );
-
-          await pollVideoStatus(
-            data.jobId
-          );
-
+        if (data.jobId) {
+          setGenerationMessage("Rendering your property video...");
+          await pollVideoStatus(data.jobId);
           return;
         }
 
@@ -1247,16 +1000,10 @@ export default function PropertyVideoPage() {
 
         console.error(error);
 
-        setGenerationStatus(
-          "error"
-        );
-
-        setGenerationError(
-          error.message ||
-            "Something went wrong while generating your video."
-        );
+        setGenerationStatus("error");
+        setGenerationError(error.message || "Something went wrong while generating your video.");
       }
-    };
+  };
 
 
   /*
@@ -1265,89 +1012,93 @@ export default function PropertyVideoPage() {
   |--------------------------------------------------------------------------
   */
 
-  const pollVideoStatus =
-    async (jobId) => {
+  const pollVideoStatus = async (jobId) => {
 
-      const maxAttempts = 180;
+    const maxAttempts = 180;
+    const pollInterval = 2000;
 
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const response = await fetch(
+        `/api/videos/jobs/${encodeURIComponent(jobId)}`
+      );
 
-      for (let attempt = 0;attempt <maxAttempts;attempt++) {
-
-        const response =
-          await fetch(`/api/videos?id=${encodeURIComponent(jobId)}`);
-
-        if (response.ok) {
-
-          const data = await response.json();
-
-
-          /*
-          |--------------------------------------------------------------------------
-          | Optional generated text
-          |--------------------------------------------------------------------------
-          */
-
-          if (data.voiceoverText) {
-            setGeneratedVoiceText(data.voiceoverText);
-          }
-
-
-          if (data.videoText) {
-            setGeneratedVideoText(data.videoText);
-          }
-
-
-          /*
-          |--------------------------------------------------------------------------
-          | Completed
-          |--------------------------------------------------------------------------
-          */
-
-          if (data.status === "completed" && data.videoUrl) {
-            setVideoUrl(data.videoUrl);
-            window.dispatchEvent(new Event("credits-updated"));
-            setGenerationStatus("success");
-            setGenerationMessage("Your property video is ready.");
-            return;
-          }
-
-
-          /*
-          |--------------------------------------------------------------------------
-          | Failed
-          |--------------------------------------------------------------------------
-          */
-
-          if (data.status ==="failed") {
-              throw new Error(data.error || "Video rendering failed.");
-          }
-
-
-          /*
-          |--------------------------------------------------------------------------
-          | Processing
-          |--------------------------------------------------------------------------
-          */
-
-          if (data.status ==="processing") {
-              setGenerationMessage("Rendering your property video...");
-          }
-        }
-
-
-        await new Promise(
-          (resolve) =>
-            setTimeout(
-              resolve,
-              2000
-            )
+      if (!response.ok) {
+        throw new Error(
+          `Could not check video status (HTTP ${response.status}).`
         );
       }
 
+      const data = await response.json();
 
-      throw new Error("Video generation timed out.");
-    };
+      // Update generated text when available.
+      const voiceoverText =
+        data.voiceoverText ?? data.generated?.voiceover;
 
+      const videoText =
+        data.videoText ?? data.generated?.videoText;
+
+      if (voiceoverText) {
+        setGeneratedVoiceText(voiceoverText);
+      }
+
+      if (videoText) {
+        setGeneratedVideoText(videoText);
+      }
+
+      // Video completed successfully.
+      
+      // Video completed successfully.
+      if (data.status === "completed") {
+        const completedVideoUrl = data.video?.url ?? data.videoUrl;
+
+        if (!completedVideoUrl) {
+          throw new Error(
+            "Video rendering completed, but no video URL was returned."
+          );
+        }
+
+        setVideoUrl(completedVideoUrl);
+        setGeneratedVideoUrl(completedVideoUrl);
+        window.dispatchEvent(new Event("credits-updated"));
+        setGenerationStatus("success");
+        setGenerationMessage("Your property video is ready.");
+        return;
+      }
+
+
+      // Video rendering failed.
+      if (data.status === "failed") {
+        throw new Error(
+          data.error || "Video rendering failed."
+        );
+      }
+
+      // Still working. Confirm these statuses match your backend.
+      if (
+        data.status === "processing" ||
+        data.status === "queued"
+      ) {
+        setGenerationMessage(
+          "Rendering your property video..."
+        );
+      } else {
+        throw new Error(
+          `Unexpected video status: ${data.status ?? "missing status"}`
+        );
+      }
+
+      // Wait before checking again, except after the final attempt.
+      if (attempt < maxAttempts - 1) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, pollInterval)
+        );
+      }
+    }
+
+    throw new Error(
+      "Video generation timed out after approximately 6 minutes."
+    );
+};
 
   /*
   |--------------------------------------------------------------------------
@@ -1355,8 +1106,7 @@ export default function PropertyVideoPage() {
   |--------------------------------------------------------------------------
   */
 
-  const currentPropertyType =
-    PROPERTY_TYPES.find(
+  const currentPropertyType = PROPERTY_TYPES.find(
       (item) =>
         item.id === propertyType
     );
@@ -4002,7 +3752,7 @@ export default function PropertyVideoPage() {
                             "
                           >
 
-                            •
+                            â€¢
 
                           </span>
 
@@ -4013,7 +3763,7 @@ export default function PropertyVideoPage() {
 
                             {videoTextLanguage ===
                             "de"
-                              ? "Bäder"
+                              ? "BÃ¤der"
                               : "Bathrooms"}
 
                           </span>
