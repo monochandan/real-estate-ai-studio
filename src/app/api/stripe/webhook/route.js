@@ -1,20 +1,46 @@
+
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
-import { BillingService } from "../../../../lib/services/billing";
+import { BillingService } from "@/lib/services/billing";
+
+export const runtime = "nodejs";
 
 export async function POST(req) {
-  const body = await req.text();
-  const signature = (await headers()).get("Stripe-Signature");
+  const signature = req.headers.get("stripe-signature");
 
   if (!signature) {
-    return new NextResponse("Invalid signature", { status: 400 });
+    return NextResponse.json(
+      { error: "Missing Stripe signature" },
+      { status: 400 }
+    );
   }
 
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error("STRIPE_WEBHOOK_SECRET is missing");
+
+    return NextResponse.json(
+      { error: "Webhook not configured" },
+      { status: 500 }
+    );
+  }
+
+  const body = await req.text();
+
   try {
-    const result = await BillingService.handleWebhook(body, signature);
+    const result = await BillingService.handleWebhook(
+      body,
+      signature
+    );
+
     return NextResponse.json(result);
   } catch (error) {
-    console.error("[STRIPE_WEBHOOK]", error);
-    return new NextResponse(error.message || "Internal Error", { status: 400 });
+    console.error("Stripe webhook error:", error);
+
+    const invalidSignature =
+      error.type === "StripeSignatureVerificationError";
+
+    return NextResponse.json(
+      { error: "Webhook processing failed" },
+      { status: invalidSignature ? 400 : 500 }
+    );
   }
 }
