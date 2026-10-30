@@ -230,7 +230,7 @@ model CreditTransaction {
 
   // Link to generation/payment if necessary
   jobId     String?
-  paymentId String?
+  paymentId String? @unique // unique - preventing - Stripe can deliver the same webhook more than once.
 
   user User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   job  GenerationJob? @relation(fields: [jobId], references: [id], onDelete: SetNull)

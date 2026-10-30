@@ -1,10 +1,17 @@
 import Stripe from "stripe";
-import config from "./config";
 
-const apiKey = config.stripe.secretKey && config.stripe.secretKey.trim() !== ""
-  ? config.stripe.secretKey
-  : "sk_test_placeholder_key_for_build_purposes";
+let stripeClient;
 
-export const stripe = new Stripe(apiKey, {
-  apiVersion: "2023-10-16",
-});
+export function getStripe() {
+  if (!stripeClient) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("STRIPE_SECRET_KEY is missing");
+    }
+
+    stripeClient = new Stripe(
+      process.env.STRIPE_SECRET_KEY
+    );
+  }
+
+  return stripeClient;
+}
