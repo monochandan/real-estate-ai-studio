@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { prisma } from "../../../../lib/prisma";
-
+import { cleanupVideoInputs } from "../../../../lib/cleanupVideoInputs";
 export const runtime = "nodejs";
 
 const SIGNED_URL_LIFETIME_SECONDS = 60 * 60 * 24 * 7;

@@ -181,7 +181,7 @@ export default function PropertyVideoPage() {
   const [credits, setCredits] = useState(0);
   const [loadingCredits, setLoadingCredits] = useState(true);
 
-
+  const [videoCompleted, setVideoCompleted] = useState(false);
   /*
   |--------------------------------------------------------------------------
   | PROPERTY STATE
@@ -787,7 +787,70 @@ export default function PropertyVideoPage() {
       };
     };
 
+  // Clear previous inputs after successful video generation.
+  const clearVideoInputs = () => {
+      // Release temporary browser preview URLs.
+      images.forEach((image) => {
+        if (image.previewUrl) {
+          URL.revokeObjectURL(image.previewUrl);
+        }
+      });
 
+      if (logo?.previewUrl) {
+        URL.revokeObjectURL(logo.previewUrl);
+      }
+
+      // Clear uploaded files.
+      setImages([]);
+      setLogo(null);
+      setSelectedScene(0);
+
+      // Clear property information.
+      setPropertyType("villa");
+      setBedrooms(3);
+      setBathrooms(2);
+      setLivingRooms(1);
+      setOtherRooms([]);
+
+      setLocation("");
+      setAddress("");
+      setPrice("");
+      setArea("");
+      setAreaUnit("m²");
+
+      setPhone("");
+      setWhatsapp("");
+      setAgent("");
+
+      // Reset video settings.
+      setVoiceLanguage("en");
+      setVideoTextLanguage("en");
+      setVideoStyle("modern");
+
+      // Clear the actual file input elements.
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      if (logoInputRef.current) {
+        logoInputRef.current.value = "";
+      }
+    };
+
+    const handleCreateAnotherVideo = () => {
+      // Show the input form again.
+      setVideoCompleted(false);
+
+      // Reset generation state for the next video.
+      setGenerationStatus("idle");
+      setGenerationMessage("");
+      setGenerationError("");
+      setGenerationId(null);
+
+      // Keep videoUrl unchanged so the previous
+      // generated video remains visible until
+      // the next generation begins.
+    };
   /*
   |--------------------------------------------------------------------------
   | GENERATE VIDEO
@@ -795,6 +858,14 @@ export default function PropertyVideoPage() {
   */
 
   const handleGenerateVideo = async () => {
+
+      if (
+        videoCompleted ||
+        generationStatus === "generating"
+      ) {
+        return;
+      }
+
       if (!session?.user) {
         signIn("google");
         return;
@@ -972,10 +1043,16 @@ export default function PropertyVideoPage() {
         |--------------------------------------------------------------------------
         */
 
-        if (data.videoUrl){
+        if (data.videoUrl) {
           setVideoUrl(data.videoUrl);
+          setGeneratedVideoUrl(data.videoUrl);
+
           setGenerationStatus("success");
           setGenerationMessage("Your property video is ready.");
+
+          clearVideoInputs();
+          setVideoCompleted(true);
+
           return;
         }
 
@@ -1058,10 +1135,20 @@ export default function PropertyVideoPage() {
           );
         }
 
+        // Keep the final generated video visible.
         setVideoUrl(completedVideoUrl);
         setGeneratedVideoUrl(completedVideoUrl);
+
+        // Mark generation as successful.
         setGenerationStatus("success");
         setGenerationMessage("Your property video is ready.");
+
+        // Clear previous inputs.
+        clearVideoInputs();
+
+        // Disable Generate Video.
+        setVideoCompleted(true);
+
         return;
       }
 
@@ -1203,7 +1290,8 @@ export default function PropertyVideoPage() {
             "
           >
 
-
+        {!videoCompleted ? (
+          <>
             {/* ==========================================================
                 1. PROPERTY PHOTOS
             ========================================================== */}
@@ -1318,12 +1406,8 @@ export default function PropertyVideoPage() {
                         >
 
                           <img
-                            src={
-                              image.url
-                            }
-                            alt={`Property ${
-                              index + 1
-                            }`}
+                            src={image.previewUrl}
+                            alt={`Property ${index + 1}`}
                             className="
                               w-full
                               h-full
@@ -3133,6 +3217,7 @@ export default function PropertyVideoPage() {
                   handleGenerateVideo
                 }
                 disabled={
+                  videoCompleted ||
                   generationStatus ===
                     "generating" ||
                   images.length <
@@ -3335,6 +3420,43 @@ export default function PropertyVideoPage() {
               />
 
             </div>
+        </> ) :(
+                <div className="text-center space-y-4 py-10">
+
+            <FaCheck className="mx-auto text-emerald-600 text-3xl" />
+
+            <h3 className="text-base font-bold text-slate-900">
+              Property Video Ready
+            </h3>
+
+            <p className="text-xs text-slate-500">
+              Your previous inputs have been cleared.
+              Your generated video is ready to preview or download.
+            </p>
+
+            <button
+              type="button"
+              onClick={handleCreateAnotherVideo}
+              className="
+                w-full
+                rounded
+                bg-indigo-600
+                px-4
+                py-3
+                text-sm
+                font-semibold
+                text-white
+                hover:bg-indigo-700
+                transition-colors
+                cursor-pointer
+              "
+            >
+              <FaRedo className="inline mr-2" />
+              Create Another Video
+            </button>
+
+          </div>
+        )}
 
           </div>
 

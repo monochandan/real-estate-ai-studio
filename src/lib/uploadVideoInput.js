@@ -112,7 +112,7 @@ export async function uploadVideoInput(jobId, file, requestedName) {
 //   path — the permanent storage location inside your bucket, such as job-id/random-id-house.jpg.
 //   signedUrl — a temporary URL that Python can use to download the private image.
 
-  console.log("Path:", path, "Signed URL:", data.signedUrl);
+  // console.log("Path:", path, "Signed URL:", data.signedUrl);
 
   return {
     path,
