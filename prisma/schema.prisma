@@ -154,6 +154,7 @@ model Asset {
   jobInputs GenerationJobInput[]
 
   createdAt DateTime @default(now())
+  deletedAt DateTime?
 }
 
 enum AssetType {
