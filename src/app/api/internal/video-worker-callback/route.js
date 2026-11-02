@@ -219,6 +219,22 @@ const completed = await prisma.$transaction(async (tx) => {
       });
     }
 
+    // The final video Asset has been saved successfully.
+    // Temporary input cleanup must not turn a completed
+    // generation into a failed generation.
+    try {
+      const cleanup = await cleanupVideoInputs(body.jobId);
+
+      console.log(
+        `Video ${body.jobId}: deleted ${cleanup.deleted} temporary inputs.`
+      );
+    } catch (cleanupError) {
+      console.error(
+        `Video ${body.jobId} completed, but input cleanup needs retry:`,
+        cleanupError
+      );
+    }
+
     return NextResponse.json({
       success: true,
       jobId: body.jobId,
