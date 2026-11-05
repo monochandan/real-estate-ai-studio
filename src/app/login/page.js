@@ -15,6 +15,7 @@ function LoginContent() {
   // const [activeTab, setActiveTab] = useState("google"); // "google" | "apikey"
   // const [apiKeyInput, setApiKeyInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingCredits, setLoadingCredits] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated") {

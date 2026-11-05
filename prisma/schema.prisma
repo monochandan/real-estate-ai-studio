@@ -124,6 +124,7 @@ model User {
   // the status must remain NOT_CONNECTED until Meta OAuth has actually verified the account.
   socialConnections SocialConnection[]
   socialPreference  SocialPreference?
+  socialOAuthPending SocialOAuthPending[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -185,6 +186,21 @@ model SocialPreference {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model SocialOAuthPending {
+  id               String   @id @default(cuid())
+  userId           String
+  selectionKeyHash String   @unique
+  accountsEncrypted String  @db.Text
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 // SOCIAL MEDAI LINKING END - 03-11-26

@@ -166,3 +166,13 @@
 .animate-gradient-x {
   animation: gradientX 6s ease infinite;
 }
+
+/* Hide scrollbar but keep scrolling enabled */
+.settings-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+}
+
+.settings-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Edge, Safari */
+}
