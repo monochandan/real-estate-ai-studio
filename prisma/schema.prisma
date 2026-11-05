@@ -113,9 +113,81 @@ model User {
   projects           Project[]
   creditTransactions CreditTransaction[]
 
+  // NEW: Social media settings
+
+  // This design deliberately supports one Facebook Page and one Instagram 
+  // account per user for your first version. If you later want users to connect
+  //  multiple Facebook Pages or Instagram accounts, you will need to change the uniqueness 
+  //constraint and update the UI.
+
+  // The profileUrl can be saved before authorization, but 
+  // the status must remain NOT_CONNECTED until Meta OAuth has actually verified the account.
+  socialConnections SocialConnection[]
+  socialPreference  SocialPreference?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// SOCIAL MEDAI LINKING START - 03.11.26
+enum SocialPlatform {
+  FACEBOOK
+  INSTAGRAM
+}
+
+enum SocialConnectionStatus {
+  NOT_CONNECTED
+  CONNECTED
+  EXPIRED
+  REVOKED
+}
+
+model SocialConnection {
+  id       String         @id @default(cuid())
+  userId   String
+  platform SocialPlatform
+
+  // User-entered profile link
+  profileUrl String? @db.Text
+
+  // Verified details returned by Meta OAuth
+  platformAccountId String?
+  accountName       String?
+  username          String?
+
+  status SocialConnectionStatus @default(NOT_CONNECTED)
+
+  // Never store plaintext OAuth tokens
+  accessTokenEncrypted  String?   @db.Text
+  refreshTokenEncrypted String?   @db.Text
+  tokenExpiresAt        DateTime?
+
+  // The permissions actually granted by the provider
+  grantedScopes String[] @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // First version: one saved account per platform per user
+  @@unique([userId, platform])
+  @@index([platform, platformAccountId])
+}
+
+model SocialPreference {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  showPublishingPrompt Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// SOCIAL MEDAI LINKING END - 03-11-26
 
 model Project {
   id     String  @id @default(cuid())
@@ -134,9 +206,9 @@ model Asset {
   id        String @id @default(cuid())
   projectId String
 
-  type AssetType
-  url  String    @db.Text
-  storagePath String?    @db.Text
+  type        AssetType
+  url         String    @db.Text
+  storagePath String?   @db.Text
 
   // Useful for images
   roomType String?
@@ -153,7 +225,7 @@ model Asset {
 
   jobInputs GenerationJobInput[]
 
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   deletedAt DateTime?
 }
 
@@ -183,9 +255,9 @@ model GenerationJob {
   type   GenerationType
   status GenerationStatus @default(PROCESSING)
 
-  requestId  String? @unique
-  creditCost Int
-  creditsDeducted  Boolean  @default(false)
+  requestId       String? @unique
+  creditCost      Int
+  creditsDeducted Boolean @default(false)
   creditsRefunded Boolean @default(false)
 
   prompt   String? @db.Text
@@ -194,14 +266,14 @@ model GenerationJob {
   inputAssetId  String?
   outputAssetId String?
 
-  errorMessage      String?  @db.Text
+  errorMessage String? @db.Text
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   inputAsset  Asset? @relation("JobInputAsset", fields: [inputAssetId], references: [id])
   outputAsset Asset? @relation("JobOutputAsset", fields: [outputAssetId], references: [id])
 
-  inputAssets  GenerationJobInput[]
+  inputAssets GenerationJobInput[]
 
   creditTransactions CreditTransaction[]
 

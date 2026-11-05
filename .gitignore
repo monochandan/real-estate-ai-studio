@@ -53,3 +53,5 @@ backend/__pycache__/
 backend/test-render.mp4
 backend/test_images/
 worker_outputs/
+
+test-social-encryption.mjs

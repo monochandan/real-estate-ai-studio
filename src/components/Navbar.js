@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { IoClose, IoMenu } from "react-icons/io5";
 import { FiMoon, FiSun, FiLogOut, FiDollarSign, FiPlus, FiUser, FiKey, FiCheck, FiX, FiTrash2} from "react-icons/fi";
+import {FiSettings} from "react-icons/fi";
 import { FaCoins } from "react-icons/fa";
 import { SiVercel } from "react-icons/si";
 import config from "@/lib/config";
@@ -304,6 +305,16 @@ export default function Navbar() {
                     {/* ------------------------------------------------------------ */}
 
                     {/* REPLACED WITH ABOVE <button></button> (293 - 302) because signout is not working*/}
+                    <Link
+                        href="/settings"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-xs font-semibold text-primary-text hover:bg-primary/10 transition-colors"
+                      >
+                        <FiSettings size={14} />
+                        <span>Settings</span>
+                      </Link>
+
+                      <div className="my-1 border-t border-divider/50" />
                       <button
                         onClick={async () => {
                           setIsProfileOpen(false);
@@ -341,13 +352,23 @@ export default function Navbar() {
           )} */}
 
           {status === "authenticated" && (
-          <Link
-            href="/pricing"
-            className="flex items-center h-8 border border-divider rounded bg-bg-page/30 px-2.5 text-xs font-bold text-primary-text gap-1.5"
-          >
-            <FaCoins className="text-amber-400" />
-            {loadingCredits ? "..." : credits}
-          </Link>
+            <>
+              <Link
+                href="/settings"
+                onClick={() => setIsOpen(false)}
+                className="flex w-full items-center justify-center gap-2 rounded border border-divider bg-bg-card py-3 text-sm font-bold text-primary-text hover:bg-primary/10 transition-colors"
+              >
+                <FiSettings size={16} />
+                <span>Settings</span>
+              </Link>
+            <Link
+              href="/pricing"
+              className="flex items-center h-8 border border-divider rounded bg-bg-page/30 px-2.5 text-xs font-bold text-primary-text gap-1.5"
+            >
+              <FaCoins className="text-amber-400" />
+              {loadingCredits ? "..." : credits}
+            </Link>
+          </>
         )}
           
           <button
