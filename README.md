@@ -41,6 +41,7 @@ A production-ready, self-hostable Next.js SaaS boilerplate built for real estate
 
 🎬 **Short Video Generation** — Turn static images into a realistic walkthrough-style video with property desciption, voice and music added.
 
+
 <!--Replaces $20–$30/photo virtual staging services. A free open-source alternative to BoxBrownie, Virtual Staging AI, ApplyDesign, and roOomy — powered by the MuAPI AI engine.-->
 
 
