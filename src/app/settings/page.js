@@ -58,6 +58,52 @@ export default function SettingsPage() {
     setShowPrompt(data.showPublishingPrompt ?? true);
   }, []);
 
+  
+  const [disconnectingPlatform, setDisconnectingPlatform] =
+    useState(null);
+
+  async function disconnectSocialAccount(platform) {
+    const confirmed = window.confirm(
+      platform === "FACEBOOK"
+        ? "Disconnect Facebook? This will also disconnect the linked Instagram account."
+        : "Disconnect Instagram from Real Estate AI Studio?"
+    );
+
+    if (!confirmed) return;
+
+    setDisconnectingPlatform(platform);
+
+    try {
+      const response = await fetch(
+        `/api/socials/connections/${platform.toLowerCase()}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to disconnect account."
+        );
+      }
+
+      toast.success(
+        platform === "FACEBOOK"
+          ? "Facebook and linked Instagram disconnected."
+          : "Instagram disconnected."
+      );
+
+      await loadSettings();
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setDisconnectingPlatform(null);
+    }
+  }
+
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");
@@ -471,6 +517,20 @@ export default function SettingsPage() {
                     {connected
                       ? "Change Facebook Page"
                       : "Connect Facebook"}
+                  </button>
+                )}
+
+                {/* ADD DISCONNECT BUTTON HERE */}
+                {connected && (
+                  <button
+                    type="button"
+                    onClick={() => disconnectSocialAccount(key)}
+                    disabled={disconnectingPlatform !== null}
+                    className="rounded-lg border border-red-300 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {disconnectingPlatform === key
+                      ? "Disconnecting..."
+                      : "Disconnect"}
                   </button>
                 )}
 

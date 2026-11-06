@@ -15,6 +15,9 @@ import {
   FaPlus,
   FaGoogle,
   FaExclamationTriangle,
+  FaShareAlt,
+  FaFacebook,
+  FaInstagram,
 } from "react-icons/fa";
 
 export default function GalleryPage() {
@@ -26,6 +29,109 @@ export default function GalleryPage() {
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
+  
+  const [publishAsset, setPublishAsset] = useState(null);
+  const [publishCaption, setPublishCaption] = useState("");
+  const [publishPlatforms, setPublishPlatforms] = useState({
+    FACEBOOK: false,
+    INSTAGRAM: false,
+  });
+
+  
+  const [socialConnections, setSocialConnections] = useState({
+    FACEBOOK: null,
+    INSTAGRAM: null,
+  });
+
+  const [socialLoading, setSocialLoading] = useState(false);
+  const [socialError, setSocialError] = useState("");
+
+
+  
+  
+
+  async function openPublishDialog(asset) {
+    if (asset?.type !== "VIDEO") return;
+
+      setPublishAsset(asset);
+      setPublishCaption("");
+      setPublishPlatforms({
+        FACEBOOK: false,
+        INSTAGRAM: false,
+      });
+
+      setSocialConnections({
+        FACEBOOK: null,
+        INSTAGRAM: null,
+      });
+
+      setSocialError("");
+      setSocialLoading(true);
+
+      try {
+        const response = await fetch("/api/socials/settings", {
+          cache: "no-store",
+        });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Unable to load social accounts."
+        );
+      }
+
+      // Supports either an array or an object keyed by platform.
+      const connections = data.connections || [];
+
+      const findConnection = (platform) => {
+        if (Array.isArray(connections)) {
+          return connections.find(
+            (connection) =>
+              connection.platform === platform &&
+              connection.status === "CONNECTED"
+          ) || null;
+        }
+
+        const connection =
+          connections[platform] ||
+          connections[platform.toLowerCase()];
+
+        return connection?.status === "CONNECTED"
+          ? connection
+          : null;
+      };
+
+      setSocialConnections({
+        FACEBOOK: findConnection("FACEBOOK"),
+        INSTAGRAM: findConnection("INSTAGRAM"),
+      });
+    } catch (error) {
+      console.error("Social connections error:", error);
+      setSocialError(error.message);
+    } finally {
+      setSocialLoading(false);
+    }
+  }
+
+
+
+  function closePublishDialog() {
+    setPublishAsset(null);
+    setPublishCaption("");
+    setPublishPlatforms({
+      FACEBOOK: false,
+      INSTAGRAM: false,
+    });
+  }
+
+  function togglePublishPlatform(platform) {
+    setPublishPlatforms((previous) => ({
+      ...previous,
+      [platform]: !previous[platform],
+    }));
+  }
+
 
   const fetchGallery = useCallback(async () => {
     try {
@@ -363,7 +469,9 @@ export default function GalleryPage() {
                       {new Date(asset.createdAt).toLocaleDateString()}
                     </p>
 
-                    <div className="grid grid-cols-3 gap-2 mt-4">
+                    <div className={`grid ${
+                        isVideo ? "grid-cols-4" : "grid-cols-3"
+                      } gap-2 mt-4`}>
                       <button
                         onClick={() => setSelectedAsset(asset)}
                         disabled={!asset.url}
@@ -380,6 +488,21 @@ export default function GalleryPage() {
                       >
                         <FaDownload />
                       </button>
+
+                     {/*publishing functionalities  */}
+                    {isVideo && (
+                      <button
+                        type="button"
+                        onClick={() => openPublishDialog(asset)}
+                        disabled={!asset.url}
+                        title="Publish video"
+                        aria-label="Publish video"
+                        className="bg-green-50 hover:bg-green-100 text-green-700 rounded-lg py-2 flex justify-center items-center cursor-pointer disabled:opacity-50"
+                      >
+                        <FaShareAlt />
+                      </button>
+                    )}
+
 
                       <button
                         onClick={() => handleDelete(asset)}
@@ -400,6 +523,203 @@ export default function GalleryPage() {
             })}
           </div>
         )}
+
+        
+        {/* Video publishing dialog — frontend only */}
+        {publishAsset && (
+          <div
+            className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-4"
+            onClick={closePublishDialog}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="publish-dialog-title"
+              onClick={(event) => event.stopPropagation()}
+              className="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between mb-5">
+                <h2
+                  id="publish-dialog-title"
+                  className="text-xl font-bold text-slate-900"
+                >
+                  Publish Property Video
+                </h2>
+
+                <button
+                  type="button"
+                  onClick={closePublishDialog}
+                  aria-label="Close publishing dialog"
+                  className="text-slate-500 hover:text-slate-900 cursor-pointer"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+
+              
+              <div className="w-full bg-black rounded-xl mb-5 overflow-hidden flex justify-center">
+                <video
+                  src={publishAsset.url}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="w-auto max-w-full h-[280px] sm:h-[340px] object-contain"
+                />
+              </div>
+
+
+              <p className="text-sm font-semibold text-slate-800 mb-3">
+                Choose where to publish
+              </p>
+
+              {/*  */}
+
+                  
+                <div className="space-y-3 mb-5">
+                  {socialLoading && (
+                    <p className="text-sm text-slate-500">
+                      Loading connected accounts...
+                    </p>
+                  )}
+
+                  {socialError && (
+                    <p className="text-sm text-red-600">
+                      {socialError}
+                    </p>
+                  )}
+
+                  {["FACEBOOK", "INSTAGRAM"].map((platform) => {
+                    const connection = socialConnections[platform];
+                    const connected = Boolean(connection);
+                    const Icon =
+                      platform === "FACEBOOK" ? FaFacebook : FaInstagram;
+
+                    const accountName = connected
+                      ? connection.accountName ||
+                        connection.username ||
+                        (platform === "FACEBOOK"
+                          ? "Facebook Page"
+                          : "Instagram Account")
+                      : "Not connected";
+
+                    return (
+                      <div
+                        key={platform}
+                        className={`border rounded-xl p-3 ${
+                          connected
+                            ? "border-slate-200"
+                            : "border-slate-200 bg-slate-50"
+                        }`}
+                      >
+                        <label
+                          className={`flex items-center gap-3 ${
+                            connected ? "cursor-pointer" : "cursor-not-allowed"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={publishPlatforms[platform]}
+                            disabled={!connected || socialLoading}
+                            onChange={() => togglePublishPlatform(platform)}
+                            className="accent-indigo-600"
+                          />
+
+                          <Icon
+                            className={`text-xl ${
+                              platform === "FACEBOOK"
+                                ? "text-blue-600"
+                                : "text-pink-600"
+                            }`}
+                          />
+
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-slate-900">
+                              {platform === "FACEBOOK"
+                                ? "Facebook Page"
+                                : "Instagram"}
+                            </p>
+
+                            <p className="text-xs text-slate-500 truncate">
+                              {accountName}
+                            </p>
+                          </div>
+
+                          <span
+                            className={`text-xs font-medium ${
+                              connected ? "text-green-600" : "text-slate-400"
+                            }`}
+                          >
+                            {connected ? "Connected" : "Not connected"}
+                          </span>
+                        </label>
+
+                        {!connected && !socialLoading && (
+                          <Link
+                            href="/settings"
+                            className="inline-block mt-2 ml-8 text-xs font-semibold text-indigo-600 hover:underline"
+                          >
+                            Connect account in Settings
+                          </Link>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+
+              {/*  */}
+
+              <label
+                htmlFor="publish-caption"
+                className="block text-sm font-semibold text-slate-800 mb-2"
+              >
+                Caption
+              </label>
+
+              <textarea
+                id="publish-caption"
+                value={publishCaption}
+                onChange={(event) =>
+                  setPublishCaption(event.target.value)
+                }
+                rows={4}
+                maxLength={2200}
+                placeholder="Write a caption for your property video..."
+                className="w-full border border-slate-200 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+              />
+
+              <p className="text-xs text-slate-400 text-right mt-1">
+                {publishCaption.length}/2200
+              </p>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mt-4">
+                <p className="text-xs text-amber-800">
+                  Publishing is not enabled yet. This dialog is a
+                  preview of the upcoming feature.
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={closePublishDialog}
+                  className="px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  disabled
+                  className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-semibold opacity-50 cursor-not-allowed"
+                >
+                  Publish — Coming Soon
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
 
         {/* Fullscreen preview */}
         {selectedAsset && (

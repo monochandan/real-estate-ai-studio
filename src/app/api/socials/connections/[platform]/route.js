@@ -92,3 +92,79 @@ export async function PATCH(request, { params }) {
 
   return NextResponse.json({ connection });
 }
+
+
+export async function DELETE(request, { params }) {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+  // Protect the account-changing request against cross-origin calls.
+  const origin = request.headers.get("origin");
+  const expectedOrigin = new URL(request.url).origin;
+
+  if (!origin || origin !== expectedOrigin) {
+    return NextResponse.json(
+      { error: "Invalid request origin" },
+      { status: 403 }
+    );
+  }
+
+  const { platform: rawPlatform } = await params;
+  const platform = rawPlatform?.toUpperCase();
+
+  if (!PLATFORMS.includes(platform)) {
+    return NextResponse.json(
+      { error: "Unsupported platform" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    // Instagram depends on the connected Facebook Page token.
+    // Disconnecting Facebook must also disconnect Instagram.
+    const platformsToDisconnect =
+      platform === "FACEBOOK"
+        ? ["FACEBOOK", "INSTAGRAM"]
+        : ["INSTAGRAM"];
+
+    const result = await prisma.socialConnection.updateMany({
+      where: {
+        userId,
+        platform: {
+          in: platformsToDisconnect,
+        },
+      },
+      data: {
+        status: "NOT_CONNECTED",
+        profileUrl: null,
+        platformAccountId: null,
+        accountName: null,
+        username: null,
+        accessTokenEncrypted: null,
+        refreshTokenEncrypted: null,
+        tokenExpiresAt: null,
+        grantedScopes: [],
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      disconnected: platformsToDisconnect,
+      updatedCount: result.count,
+    });
+  } catch (error) {
+    console.error("Social account disconnect failed:", error.name);
+
+    return NextResponse.json(
+      { error: "Unable to disconnect social account" },
+      { status: 500 }
+    );
+  }
+}

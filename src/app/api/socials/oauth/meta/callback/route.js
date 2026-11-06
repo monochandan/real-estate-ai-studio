@@ -148,9 +148,34 @@ export async function GET(request) {
       return redirect("missing_page_token");
     }
 
+    
     const accountsEncrypted = encryptToken(
-      JSON.stringify(accounts)
+    JSON.stringify({
+        version: 2,
+
+        // Long-lived Meta user token.
+        // This stays inside the encrypted database field.
+        userAccessToken: longLived.access_token,
+
+        // Record its expected expiry when Meta supplies one.
+        userTokenExpiresAt:
+        typeof longLived.expires_in === "number"
+            ? new Date(
+                Date.now() + longLived.expires_in * 1000
+            ).toISOString()
+            : null,
+
+        // Preserve all existing Facebook Page data.
+        accounts,
+    })
     );
+
+    console.log("Meta callback diagnostics:", {
+    formatVersion: 2,
+    hasLongLivedUserToken: Boolean(longLived.access_token),
+    pageCount: accounts.length,
+    });
+
 
     await prisma.socialOAuthPending.create({
       data: {
