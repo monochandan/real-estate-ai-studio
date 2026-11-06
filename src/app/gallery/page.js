@@ -114,6 +114,25 @@ export default function GalleryPage() {
     }
   }
 
+  // determines whether the publishing form is valid.
+  const selectedPublishPlatforms = Object.entries(
+    publishPlatforms
+  )
+    .filter(([, selected]) => selected)
+    .map(([platform]) => platform);
+
+  const hasValidPublishSelection =
+    Boolean(publishAsset?.url) &&
+    selectedPublishPlatforms.length > 0 &&
+    selectedPublishPlatforms.every(
+      (platform) =>
+        socialConnections[platform]?.status === "CONNECTED"
+    ) &&
+    publishCaption.length <= 2200 &&
+    !socialLoading &&
+    !socialError;
+
+
 
 
   function closePublishDialog() {
@@ -692,12 +711,49 @@ export default function GalleryPage() {
                 {publishCaption.length}/2200
               </p>
 
+              {selectedPublishPlatforms.length === 0 && (
+                  <p className="text-sm text-amber-600 mt-2">
+                    Select at least one platform to publish your video.
+                  </p>
+                )}
+
+                {selectedPublishPlatforms.length > 0 &&
+                  !hasValidPublishSelection && (
+                    <p className="text-sm text-red-600 mt-2">
+                      Please check your connected accounts and video
+                      before continuing.
+                    </p>
+                )}
+
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mt-4">
                 <p className="text-xs text-amber-800">
                   Publishing is not enabled yet. This dialog is a
                   preview of the upcoming feature.
                 </p>
+                
+                
+
               </div>
+
+              
+                {hasValidPublishSelection && (
+                  <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 mt-4">
+                    <p className="text-sm font-semibold text-slate-900 mb-2">
+                      Ready for publishing
+                    </p>
+
+                    <p className="text-sm text-slate-600">
+                      Selected platforms:{" "}
+                      {selectedPublishPlatforms.join(", ")}
+                    </p>
+
+                    <p className="text-xs text-slate-500 mt-2">
+                      Your video will only be published after you
+                      explicitly confirm the action.
+                    </p>
+                  </div>
+                )}
+
 
               <div className="flex justify-end gap-3 mt-6">
                 <button
