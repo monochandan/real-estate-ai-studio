@@ -122,12 +122,15 @@ model User {
 
   // The profileUrl can be saved before authorization, but 
   // the status must remain NOT_CONNECTED until Meta OAuth has actually verified the account.
-  socialConnections SocialConnection[]
-  socialPreference  SocialPreference?
+  socialConnections  SocialConnection[]
+  socialPreference   SocialPreference?
   socialOAuthPending SocialOAuthPending[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  propertyPhotos PropertyPhoto[]
+  videoSettings  Json?
 }
 
 // SOCIAL MEDAI LINKING START - 03.11.26
@@ -188,14 +191,13 @@ model SocialPreference {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
 model SocialOAuthPending {
-  id               String   @id @default(cuid())
-  userId           String
-  selectionKeyHash String   @unique
-  accountsEncrypted String  @db.Text
-  expiresAt        DateTime
-  createdAt        DateTime @default(now())
+  id                String   @id @default(cuid())
+  userId            String
+  selectionKeyHash  String   @unique
+  accountsEncrypted String   @db.Text
+  expiresAt         DateTime
+  createdAt         DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -214,8 +216,9 @@ model Project {
   assets Asset[]
   jobs   GenerationJob[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  propertyPhotos PropertyPhoto[]
 }
 
 model Asset {
@@ -240,6 +243,9 @@ model Asset {
   outputJobs GenerationJob[] @relation("JobOutputAsset")
 
   jobInputs GenerationJobInput[]
+
+  originalPropertyPhotos PropertyPhoto[] @relation("OriginalPhoto")
+  selectedPropertyPhotos PropertyPhoto[] @relation("SelectedPhoto")
 
   createdAt DateTime  @default(now())
   deletedAt DateTime?
@@ -325,6 +331,32 @@ model CreditTransaction {
   job  GenerationJob? @relation(fields: [jobId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
+}
+
+model PropertyPhoto {
+  id              String @id @default(cuid())
+  projectId       String
+  originalAssetId String
+  selectedAssetId String
+  sortOrder       Int
+
+  roomType       String?
+  roomTypeSource String? // AI or USER
+  analysis       Json?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  originalAsset Asset @relation("OriginalPhoto", fields: [originalAssetId], references: [id])
+
+  selectedAsset Asset @relation("SelectedPhoto", fields: [selectedAssetId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+
+  @@unique([projectId, sortOrder])
+  @@index([projectId])
 }
 
 enum CreditTransactionType {
