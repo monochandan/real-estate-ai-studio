@@ -96,7 +96,7 @@ export default function Navbar() {
         { name: "Staging", path: `/app/${currentAppId}` },
         { name: "Decluttering", path: `/app/${currentAppId}/declutter`},
         { name: "Video", path: `/app/${currentAppId}/video` },
-        { name: "Property Prep", path: `/app/${currentAppId}/propertyprep`},
+        { name: "Property Prep", path: "/propertyprep"},
         { name: "Gallery", path: `/app/${currentAppId}/gallery` },
         { name: "Pricing", path: `/app/${currentAppId}/pricing` },
       ]

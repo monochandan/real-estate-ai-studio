@@ -1,9 +1,9 @@
+
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import Navbar from "../components/Navbar";
 import config from "@/lib/config";
-// import type { Metadata } from "next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -17,9 +17,10 @@ const outfit = Outfit({
 
 export const metadata = {
   title: "EstateStager AI - Virtual Home Staging SaaS",
-  description: "Upload room photos, select room types and templates, and virtually stage vacant spaces instantly with photorealistic AI designs.",
+  description:
+    "Upload room photos, select room types and templates, and virtually stage vacant spaces instantly with photorealistic AI designs.",
   icons: {
-    appicon: "/images/appicon.png"
+    appicon: "/images/appicon.png",
   },
 };
 
@@ -27,11 +28,16 @@ export default function RootLayout({ children }) {
   const theme = config?.theme || "slate-indigo";
 
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable} h-full w-full`} data-theme={theme}>
-      <body className="h-full w-full flex flex-col antialiased bg-bg-page text-primary-text font-sans overflow-hidden">
+    <html
+      lang="en"
+      className={`${inter.variable} ${outfit.variable} min-h-full w-full`}
+      data-theme={theme}
+    >
+      <body className="min-h-screen w-full flex flex-col antialiased bg-bg-page text-primary-text font-sans overflow-x-hidden overflow-y-auto">
         <Providers>
           <Navbar />
-          <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+
+          <div className="flex-1 flex flex-col min-h-0">
             {children}
           </div>
         </Providers>
@@ -39,4 +45,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-
